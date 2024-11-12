@@ -9,6 +9,15 @@ import {
   googleUser,
   getUserByResetToken,
   updateUserPassword,
+  listProperty,
+  getPropertyDetailsById,
+  getBookings,
+  getProperties,
+  getBookingDetails,
+  createOrFetchChatSession,
+  fetchChats,
+  addMessageToChat,
+  getChats,
 } from "../../../infrastructure/repositories/mongoUserRepository";
 import { Encrypt } from "../../helper/hashPassword";
 import {
@@ -18,6 +27,7 @@ import {
 import { getStoredOTP } from "../../../infrastructure/repositories/mongoUserRepository";
 import { generateToken, generateResetToken, validateResetToken } from "../../helper/jwtHelper";
 import { log } from "console";
+import { stringify } from "querystring";
 
 function createError(message: string, status: number) {
   const error: any = new Error(message);
@@ -228,9 +238,110 @@ export default {
     await user.save();
 
     return { message: "Password has been reset successfully" };
+  },
+
+
+
+  getPropertyList: async () => {
+    try {
+      const propertyList = await listProperty();
+      return propertyList;
+    } catch (error: any) {
+      console.error("Error in addVendorProperty:", error);
+      throw new Error("Error adding property: " + error.message);
+    }
+  },
+
+
+  fetchPropertyDetailsById: async (propertyId: string) => {
+   try {
+    const property = await getPropertyDetailsById(propertyId)
+    return property;
+   } catch (error) {
+    throw new Error ("Failed to get property")
+   } 
+  },
+
+
+  bookings: async (propertyId: string, userId: string, vendorId: string, visitDate: Date, timeSlot: string) => {
+    try {
+      const newBooking = await getBookings(propertyId, userId, vendorId, visitDate, timeSlot);
+      return newBooking;
+    } catch (error) {
+      throw new Error("Failed to save booking");
+    }
+  },
+
+
+  fetchProperties: async()=>{
+    try {
+      const property = await getProperties();
+      return property;
+    } catch (error) {
+      console.error("Error fetching vendor by id:", error);
+      throw new Error("Failed to fetch vendor");
+    }
+  },
+
+
+  fetchBookings: async (userId: string) => {
+    try {
+      const bookings = await getBookingDetails(userId);
+      return bookings;
+    } catch (error) {
+      console.error('Error in fetchBookings:', error);
+      throw error;
+    }
+  },
+
+  initiateChatSession:async (userId: string, vendorId: string) => {
+    try {
+      return await createOrFetchChatSession([userId, vendorId]);
+    } catch (error) {
+      console.error('Failed to initiate chat session:', error);
+      throw new Error('Failed to initiate chat session');
+    }
+  },
+
+  getAllChats: async (chatId: string) => {
+    try {
+      return await fetchChats(chatId);
+    } catch (error) {
+      console.error('Error in fetching chat history:', error);
+      throw new Error('Failed to fetch chat history');
+    }
+  },
+
+
+  sendMessageToChat: async (
+    chatId: string,
+    senderId: string,
+    message: string,
+    recipientId: string,
+    senderModel: 'User' | 'Vendor',  // Add senderModel as a parameter
+    recipientModel: 'User' | 'Vendor' // Add recipientModel as a parameter
+  ) => {
+    try {
+      // Pass all parameters to addMessageToChat
+      return await addMessageToChat(chatId, senderId, message, recipientId, senderModel, recipientModel);
+    } catch (error) {
+      console.error("Error in sendMessage interactor:", error);
+      throw new Error("Failed to send message");
+    }
+  },
+
+
+  getChatLists: async (userId: string) => {
+    console.log("Interactor: Getting chat list for user ID:", userId);
+  
+    try {
+      return await getChats(userId);
+    } catch (error) {
+      console.error('Error in fetching chat list from interactor:', error);
+      throw new Error('Failed to fetch chat list');
+    }
   }
-
-
+  
 
 
 

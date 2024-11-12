@@ -19,7 +19,14 @@ export interface PropertyDataRequest {
     parking: string;                // Parking availability (Yes/No)
     media: Express.Multer.File[];   // Array of media files (images, videos)
     amenities: string[];            // List of amenities (e.g., School, Hospital, etc.)
-    district: string;               // District where the property is located
+    district: string;  
+    city : string;
+    bedrooms: number; 
+    balconies: number;
+    furnishingStatus: string; 
+    powerBackup: string; 
+    roadAccessibility: string; 
+    locationAdvantages: string[];              // District where the property is located
     locality: string;               // Locality of the property
     zip: string;                    // Zip or postal code
     address: string;                // Full address of the property
@@ -49,10 +56,17 @@ export interface PropertyDataResponse {
     parking: string;                 // Parking status (Available, Not Available)
     mediaUrls: string[];             // URLs of the uploaded media files (images/videos)
     amenities: string[];             // List of amenities (e.g., School, Hospital, etc.)
-    district: string;                // District where the property is located
+    district: string; 
+    city : string;               // District where the property is located
     locality: string;                // Locality of the property
     zip: string;                     // Zip or postal code
     address: string;                 // Full address of the property
     landmark: string;                // Nearby landmark of the property
+    bedrooms: number; 
+    balconies: number;
+    furnishingStatus: string; 
+    powerBackup: string; 
+    roadAccessibility: string; 
+    locationAdvantages: string[]; 
     createdAt: Date;                 // Timestamp when the property was created
 }

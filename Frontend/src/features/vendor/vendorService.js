@@ -38,12 +38,33 @@ export const addVendorProperty = async (formDataToSend, vendorId) => {
   }
 };
 
+export const updateVendorProperty = async (propertyId, vendorId, formDataToSend) => {
+  console.log("Sending FormData:", propertyId, vendorId, formDataToSend);
+  try {
+    const response = await axios.put(
+      `${API_URL}/edit-property/${propertyId}?vendorId=${vendorId}`, // Include vendorId as a query parameter
+      formDataToSend,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    return response;
+  } catch (error) {
+    console.error("Error in updateVendorProperty:", error);
+    throw error;
+  }
+};
+
+
 
   const vendorService = {
     loginVendor,
     uploadLicense,
     getLicense,
-    addVendorProperty
+    addVendorProperty,
+    updateVendorProperty
   };
 
   export default vendorService;

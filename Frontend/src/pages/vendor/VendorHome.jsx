@@ -1,15 +1,19 @@
+import React from "react";
+import VendorSidebar from "../../components/VendorSidebar"; // Make sure the path is correct
+import {
+  BuildingOfficeIcon,
+  ChatBubbleBottomCenterTextIcon,
+  
+} from "@heroicons/react/24/outline";
+import { UserIcon } from "@heroicons/react/24/solid";
 
-import React from 'react';
-import VendorSidebar from '../../components/VendorSidebar'; // Make sure the path is correct
-import { BuildingOfficeIcon, ChatBubbleBottomCenterTextIcon, UserIcon } from '@heroicons/react/24/outline';
-import { useSelector } from 'react-redux';
-import { selectVendor } from '../../features/vendor/vendorSlice';
-import VendorHeader from '../../components/VendorHeader';
+
+import { useSelector } from "react-redux";
+import { selectVendor } from "../../features/vendor/vendorSlice";
+import VendorHeader from "../../components/VendorHeader";
 
 const VendorDashboard = () => {
-
   const vendor = useSelector(selectVendor);
-
 
   return (
     <div className="flex h-screen">
@@ -20,12 +24,14 @@ const VendorDashboard = () => {
       <div className="flex-1 p-10 bg-gray-100">
         <header className="flex justify-between items-center">
           <div>
-            <h1 className="text-2xl font-semibold">Welcome back,{ vendor.name}!</h1>
-            <p className="text-gray-500">Maximize your business with our platform. Utilize our offerings.</p>
+            <h1 className="text-2xl font-semibold">
+              Welcome back,{vendor.name}!
+            </h1>
+            <p className="text-gray-500">
+              Maximize your business with our platform. Utilize our offerings.
+            </p>
           </div>
-<VendorHeader/>
-
-
+          <VendorHeader />
         </header>
 
         {/* Statistics Section */}
@@ -51,7 +57,9 @@ const VendorDashboard = () => {
 
         {/* View more link */}
         <div className="mt-6">
-          <a href="#" className="text-blue-600 hover:underline">View more &rarr;</a>
+          <a href="#" className="text-blue-600 hover:underline">
+            View more &rarr;
+          </a>
         </div>
       </div>
     </div>

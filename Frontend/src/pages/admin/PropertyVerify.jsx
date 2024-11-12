@@ -15,7 +15,7 @@ function PropertyVerify() {
     setStatus('loading');
     try {
       const response = await axiosInstance.get("/propertyverify");
-      console.log(response.data,"dsffffffffffffffffffffff   ");
+      console.log(response.data,"dsffffffffffffffffffffff");
        // Adjust the endpoint
       if (Array.isArray(response.data)) {
         setProperties(response.data); // Assuming the response has 'properties'

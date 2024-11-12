@@ -30,7 +30,7 @@ function Home() {
   return (
     <div>
       {/* Header should be used here as a self-contained component */}
-      <Header />
+      <Header/>
 
 
       <div className="flex flex-col items-center justify-center min-h-screen bg-gray-100 select-none">

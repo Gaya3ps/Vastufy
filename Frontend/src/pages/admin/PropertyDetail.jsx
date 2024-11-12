@@ -8,6 +8,8 @@ function PropertyDetail() {
   const [property, setProperty] = useState(null); // State to hold the property data
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(true); // Loading state
+  const [isAccepted, setIsAccepted] = useState(false); // Track if accepted
+  const [isRejected, setIsRejected] = useState(false); // Track if rejected
   const navigate = useNavigate(); // For programmatic navigation after actions
 
   // Fetch property details by ID
@@ -15,7 +17,10 @@ function PropertyDetail() {
     const fetchPropertyDetails = async () => {
       try {
         const response = await axiosInstance.get(`/property/${propertyId}`); // Pass propertyId in URL
+        console.log(response.data, 'Property details fetched successfully');
         setProperty(response.data);
+        setIsAccepted(response.data.status === 'accepted'); // Set initial status
+        setIsRejected(response.data.status === 'rejected'); // Set initial status
         setLoading(false);
       } catch (err) {
         console.error('Error fetching property details:', err);
@@ -23,26 +28,25 @@ function PropertyDetail() {
         setLoading(false);
       }
     };
-  
+
     fetchPropertyDetails();
-  }, []);
-  
+  }, [propertyId]);
 
-  const handleAccept = async () => {
+  const updatePropertyStatus = async (newStatus) => {
     try {
-      await axiosInstance.patch(`/property/verify/${propertyId}`, { status: 'accepted' });
-      navigate('/admin/propertyverify'); // Redirect to property verification list after accepting
-    } catch (err) {
-      console.error('Error accepting property:', err);
-    }
-  };
+      await axiosInstance.patch(`/updatepropertystatus/${propertyId}`, { status: newStatus });
 
-  const handleReject = async () => {
-    try {
-      await axiosInstance.patch(`/property/verify/${propertyId}`, { status: 'rejected' });
-      navigate('/admin/propertyverify'); // Redirect to property verification list after rejecting
+      if (newStatus === 'rejected') {
+        setIsRejected(true);
+        setIsAccepted(false);
+      } else if (newStatus === 'accepted') {
+        setIsAccepted(true);
+        setIsRejected(false);
+      }
+
+      setProperty((prevProperty) => ({ ...prevProperty, status: newStatus }));
     } catch (err) {
-      console.error('Error rejecting property:', err);
+      console.error('Failed to update status:', err);
     }
   };
 
@@ -57,25 +61,37 @@ function PropertyDetail() {
         {property ? (
           <div className="bg-white shadow-md rounded-lg p-6">
             <h1 className="text-2xl font-bold mb-4">{property.title}</h1>
-            <p><strong>Price:</strong> {property.expectedPrice}</p>
+            <p><strong>Price:</strong> ₹{property.expectedPrice}</p>
             <p><strong>Location:</strong> {property.address}</p>
-            <p><strong>Category:</strong> {property.category?.name}</p>
-            <p><strong>Vendor:</strong> {property.vendor?.name}</p>
+            <p><strong>Category:</strong> {property.category?.name || 'N/A'}</p>
+            <p><strong>Vendor:</strong> {property.vendor?.name || 'N/A'}</p>
             <p><strong>Status:</strong> {property.availableStatus}</p>
 
             <div className="mt-6">
-              <button
-                className="px-4 py-2 bg-green-500 text-white rounded-md mr-4 hover:bg-green-600"
-                onClick={handleAccept}
-              >
-                Accept
-              </button>
-              <button
-                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
-                onClick={handleReject}
-              >
-                Reject
-              </button>
+              {isAccepted ? (
+                <button className="px-4 py-2 bg-green-500 text-white rounded-md" disabled>
+                  Accepted
+                </button>
+              ) : isRejected ? (
+                <button className="px-4 py-2 bg-red-500 text-white rounded-md" disabled>
+                  Rejected
+                </button>
+              ) : (
+                <>
+                  <button
+                    className="px-4 py-2 bg-green-500 text-white rounded-md mr-2 hover:bg-green-600 focus:outline-none"
+                    onClick={() => updatePropertyStatus('accepted')}
+                  >
+                    Accept
+                  </button>
+                  <button
+                    className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none"
+                    onClick={() => updatePropertyStatus('rejected')}
+                  >
+                    Reject
+                  </button>
+                </>
+              )}
             </div>
           </div>
         ) : (

@@ -41,5 +41,21 @@ vendorRouter.post(
   vendorController.addProperty
 );
 vendorRouter.get("/properties/:vendorId", vendorController.getProperties);
+vendorRouter.get("/bookings/:vendorId", vendorController.getBookings);
+vendorRouter.put(
+  "/edit-property/:propertyId",
+  uploadPropertyMedia,
+  vendorController.updateProperty
+);
+vendorRouter.get("/edit-properties/:id", vendorController.getPropertyById);
+vendorRouter.put("/accept-booking/:bookingId",vendorController.acceptBooking);
+vendorRouter.put("/reject-booking/:bookingId",vendorController.rejectBooking);
+vendorRouter.get("/chats/:chatId",vendorController.fetchChatHistory);
+vendorRouter.get("/chatList/:vendorId",vendorController.fetchChatList);
+vendorRouter.post("/chats/:chatId/send",vendorController.sendMessage);
+
+
+
+
 
 export default vendorRouter;

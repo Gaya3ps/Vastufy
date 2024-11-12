@@ -1,9 +1,10 @@
 import { NextFunction, Request, response, Response } from "express";
 import adminInteractor from "../../domain/usecases/auth/adminInteractor";
-import { getAllVendors } from "../../infrastructure/repositories/mongoVendorrepository";
+import { getAllProperties, getAllVendors } from "../../infrastructure/repositories/mongoVendorrepository";
 import { log } from "console";
 import { LicenseModel } from "../../infrastructure/database/dbModel/licenceModel";
 import { Vendor } from "../../infrastructure/database/dbModel/vendorModel";
+import { PropertyModel } from "../../infrastructure/database/dbModel/propertyModel";
 
 export default {
   adminLogin: async (req: Request, res: Response, next: NextFunction) => {
@@ -166,7 +167,6 @@ export default {
 
   addCategory: async (req: Request, res: Response) => {
     try {
-      // console.log(req.body, "jjjjjjjjjjjjjjjjjjjjj");
       const { name, description } = req.body;
       if (!name)
         return res.status(404).json({ message: "Category name  not found" });
@@ -200,8 +200,6 @@ export default {
     try {
       const { id } = req.params;
       const { name, description } = req.body;
-      // console.log(req.body, "llllllllllllllllllllllllll");
-      // console.log(id, "ooooooooooooooo");
       if (!name || !id)
         return res
           .status(404)
@@ -221,7 +219,6 @@ export default {
   deleteCategory: async (req: Request, res: Response) => {
     try {
       const { id } = req.params;
-      // console.log(id, "888888888888");
       if (!id)
         return res.status(404).json({ message: "Category id not found" });
 
@@ -235,7 +232,6 @@ export default {
 
   addSubCategory: async (req: Request, res: Response) => {
     try {
-      // console.log(req.body, "///////////////////////////////");
       const { name, categoryId } = req.body;
       if (!name || !categoryId)
         return res
@@ -267,8 +263,6 @@ export default {
     try {
       const { id } = req.params;
       const { name, categoryId } = req.body;
-      // console.log(req.body, "77777777777777");
-      // console.log(id, "77777777777777444444444444444");
       if (!id || !name || !categoryId)
         return res
           .status(404)
@@ -298,23 +292,19 @@ export default {
     }
   },
 
-  getProperties: async (_req: Request, res: Response) => {  
-    console.log("evuddsdsssssss");
-
+  getVerifiedProperties:async (req: Request, res: Response) => {
     try {
-      const propertyList = await adminInteractor.getPropertyList();
-
-      return res.status(200).json(propertyList);
-    } catch (error) {
-      console.error("Error fetching  properties", error);
-      res.status(500).json({ error: "Failed to fetch properties" });
+      const response = await getAllProperties();
+      log(response);
+      res.status(200).json(response);
+    } catch (error: any) {
+      res.status(500).json(error);
     }
   },
 
   verifyProperty:  async (req: Request, res: Response): Promise<void> => {
     try {
       const verifyProperties = await adminInteractor.verifyProperties();
-      
        res.status(200).json(verifyProperties);
     } catch (error) {
       console.error("Error fetching vendors:", error);
@@ -322,31 +312,98 @@ export default {
     }
   },
 
-  propertyDetailVerification: async (req: Request, res: Response) => {
-    console.log("reached property detail verification"); // Debugging log
-  
+
+
+  getPropertyById: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      const { propertyId } = req.params; // Extract propertyId from params
-      console.log(propertyId, "Request params received");
-  
-      // // Fetch the property details by propertyId from the database
-      // const property = await PropertyModel.findById(propertyId)
-      //   .populate('vendor') // Assuming you want to populate the vendor details
-      //   .populate('category'); // Assuming you want to populate the category details
-  
-      // if (!property) {
-      //   return res.status(404).json({ message: 'Property not found' });
-      // }
-  
-      // // Send the property details as the response
-      // return res.status(200).json(property);
-    } catch (error) {
-      console.error("Error fetching property details:", error);
-      res.status(500).json({ error: 'Failed to fetch property details' });
+      const {propertyId} = req.params
+      const property = await adminInteractor.fetchPropertyById(propertyId);
+      if (!property) return res.status(404).json({ message: "Property not found" });
+      res.status(200).json(property);
+    } catch (error: any) {
+      console.error(error.message);
+      res.status(500).json({ error: error.message });
+      next(error);
     }
-  }
+  },
+
+  updatePropertyVerificationStatus: async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ) => {
+    try {
+      const { is_verified } = req.body;
+      const property = await adminInteractor.verifyProperty(
+        req.params.id,
+        is_verified
+      );
+      if (!property) return res.status(404).json({ message: "Vendor not found" });
+      res.status(200).json(property);
+    } catch (error: any) {
+      console.error(error.message);
+      res.status(500).json({ error: error.message });
+      next(error);
+    }
+  },
+
+  updatePropertyIsVerified: async (req: Request, res: Response) => {
+    const propertyId = req.params.propertyId;
+    const { is_verified } = req.body;
+
+    try {
+      const updatedProperty = await PropertyModel.findByIdAndUpdate(
+        propertyId,
+        { is_verified },
+        { new: true }
+      );
+      res.json(updatedProperty);
+    } catch (err) {
+      console.error("Error updating vendor is_verified:", err);
+      res.status(500).json({ error: "Failed to update vendor is_verified" });
+    }
+  },
 
 
-};
+  addSubscriptionPlan: async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      const { planName, price, features, maxListings, prioritySupport } = req.body;
+      if (!planName || !price  || !features || !maxListings || prioritySupport === undefined) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
+ if (prioritySupport !== "yes" && prioritySupport !== "no") {
+  return res.status(400).json({ message: "Invalid value for prioritySupport" });
+}
+
+      // Create the subscription plan through the adminInteractor
+      const savedSubscriptionPlan = await adminInteractor.addSubscriptionPlan({
+        planName,
+        price,
+        features,
+        maxListings,
+        prioritySupport
+      });
+
+      // Respond with the saved subscription plan
+      res.status(201).json({ message: "Subscription plan added successfully", plan: savedSubscriptionPlan });
+    } catch (error: any) {
+      console.error("Error adding subscription plan:", error);
+      res.status(500).json({ error: "Failed to add subscription plan" });
+      next(error);
+    }
+  },
+
+
+  getSubscriptionPlans: async (req: Request, res: Response) => {
+    try {
+      const response = await adminInteractor.getAllSubscriptionPlans();
+      res.status(200).json(response);
+    } catch (error: any) {
+      res.status(500).json(error);
+    }
+},
+
+
+}
 
 

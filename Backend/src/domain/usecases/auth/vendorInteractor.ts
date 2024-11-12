@@ -11,6 +11,15 @@ import {
   listCategory,
   saveProperty,
   listProperty,
+  listBookings,
+  // updatePropertyInDB,
+  getPropertyByIdFromDB,
+  updatePropertyInDB,
+  acceptBookingStatus,
+  rejectBookingStatus,
+  fetchChatHistory,
+  fetchChatList,
+  sendMessage,
 } from "../../../infrastructure/repositories/mongoVendorrepository";
 import { log } from "console";
 import { generateOTP } from "../../../utils/otpUtils";
@@ -298,10 +307,17 @@ export default {
         floorNo,
         parking,
         district,
+        city,
         locality,
         zip,
         address,
         landmark,
+        bedrooms,
+        balconies,
+        furnishingStatus, 
+        powerBackup,
+        roadAccessibility, 
+        locationAdvantages, 
         media, // Media files (images/videos)
         amenities, // List of amenities
       } = propertyData;
@@ -333,10 +349,17 @@ export default {
         floorNo,
         parking,
         district,
+        city,
         locality,
         zip,
         address,
         landmark,
+        bedrooms,
+        balconies,
+        furnishingStatus, 
+        powerBackup,
+        roadAccessibility, 
+        locationAdvantages, 
         mediaUrls, // URLs of uploaded media files
         amenities, // Amenities list
         vendor: vendorId, // Associate property with vendor
@@ -366,10 +389,17 @@ export default {
         floorNo: savedProperty.floorNo,
         parking: savedProperty.parking,
         district: savedProperty.district,
+        city: savedProperty.city,
         locality: savedProperty.locality,
         zip: savedProperty.zip,
         address: savedProperty.address,
         landmark: savedProperty.landmark,
+        bedrooms: savedProperty.bedrooms,
+        balconies:savedProperty.balconies,
+        furnishingStatus: savedProperty.furnishingStatus, 
+        powerBackup: savedProperty.powerBackup,
+        roadAccessibility: savedProperty.roadAccessibility, 
+        locationAdvantages: savedProperty.locationAdvantages, 
         mediaUrls: savedProperty.mediaUrls, // Include uploaded media URLs
         amenities: savedProperty.amenities, // Include amenities
         createdAt: savedProperty.createdAt, // Date property was created
@@ -392,4 +422,225 @@ export default {
       throw new Error("Error adding property: " + error.message);
     }
   },
+
+
+  getBookingList : async (vendorId: string) => {
+    try {
+      // Call the repository to get the bookings for the vendor
+      const bookingList = await listBookings(vendorId);
+      console.log(bookingList,'aaaaaaaaaaaaaaaaa');
+      
+      return bookingList;
+    } catch (error) {
+      console.error('Error in interactor:', error);
+      throw new Error('Failed to get bookings');
+    }
+  },
+
+
+  updateVendorProperty: async (
+    propertyId: string,
+    vendorId: string,
+    propertyData: PropertyDataRequest
+  ): Promise<PropertyDataResponse> => {
+    try {
+      const {
+        propertyType,
+        expectedPrice,
+        title,
+        description,
+        category,
+        subcategory,
+        ownershipStatus,
+        availableStatus,
+        saletype, // Use 'saletype' as defined in PropertyDataResponse
+        ageofproperty, // Use 'ageofproperty' as defined in PropertyDataResponse
+        carpetArea,
+        builtUpArea,
+        plotArea,
+        washrooms,
+        totalFloors,
+        floorNo,
+        parking,
+        district,
+        city,
+        locality,
+        zip,
+        address,
+        landmark,
+        bedrooms,
+        balconies,
+        furnishingStatus, 
+        powerBackup,
+        roadAccessibility, 
+        locationAdvantages, 
+        media, 
+        amenities,
+      } = propertyData;
+  
+      // Step 1: Upload media files to S3 and get their URLs if new media files are provided
+      const mediaUrls: string[] = [];
+      if (media && media.length > 0) {
+        for (const file of media) {
+          const mediaUploadResult = await uploadToS3(file);
+          mediaUrls.push(mediaUploadResult.Location);
+        }
+      }
+  
+      // Step 2: Construct updated property data
+      const updatedPropertyData = {
+        propertyType,
+        expectedPrice,
+        title,
+        description,
+        category,
+        subcategory,
+        ownershipStatus,
+        availableStatus,
+        saletype, // Use 'saletype' as is
+        ageofproperty, // Use 'ageofproperty' as is
+        carpetArea,
+        builtUpArea,
+        plotArea,
+        washrooms,
+        totalFloors,
+        floorNo,
+        parking,
+        district,
+        city,
+        locality,
+        zip,
+        address,
+        landmark,
+        bedrooms,
+        balconies,
+        furnishingStatus, 
+        powerBackup,
+        roadAccessibility, 
+        locationAdvantages: locationAdvantages || [],
+        amenities: amenities || [],
+        ...(mediaUrls.length > 0 && { mediaUrls }),
+      };
+  
+      // Step 3: Update the property in the database
+      const updatedProperty = await updatePropertyInDB(propertyId, vendorId, updatedPropertyData);
+  
+      // Check if updatePropertyInDB returned null
+      if (!updatedProperty) {
+        throw new Error("Property not found or does not belong to this vendor");
+      }
+  
+      // Step 4: Create and return the PropertyDataResponse object
+      const propertyResponse: PropertyDataResponse = {
+        propertyType: updatedProperty.propertyType,
+        expectedPrice: updatedProperty.expectedPrice,
+        title: updatedProperty.title,
+        description: updatedProperty.description,
+        category: updatedProperty.category,
+        subcategory: updatedProperty.subcategory,
+        ownershipStatus: updatedProperty.ownershipStatus,
+        availableStatus: updatedProperty.availableStatus,
+        saletype: updatedProperty.saletype, // Use 'saletype' as is
+        ageofproperty: updatedProperty.ageofproperty, // Use 'ageofproperty' as is
+        carpetArea: updatedProperty.carpetArea,
+        builtUpArea: updatedProperty.builtUpArea,
+        plotArea: updatedProperty.plotArea,
+        washrooms: updatedProperty.washrooms,
+        totalFloors: updatedProperty.totalFloors,
+        floorNo: updatedProperty.floorNo,
+        parking: updatedProperty.parking,
+        district: updatedProperty.district,
+        city: updatedProperty.city,
+        locality: updatedProperty.locality,
+        zip: updatedProperty.zip,
+        address: updatedProperty.address,
+        landmark: updatedProperty.landmark,
+        bedrooms: updatedProperty.bedrooms,
+        balconies: updatedProperty.balconies,
+        furnishingStatus: updatedProperty.furnishingStatus,
+        powerBackup: updatedProperty.powerBackup,
+        roadAccessibility: updatedProperty.roadAccessibility,
+        locationAdvantages: updatedProperty.locationAdvantages,
+        mediaUrls: updatedProperty.mediaUrls,
+        amenities: updatedProperty.amenities,
+        createdAt: updatedProperty.createdAt,
+      };
+  
+      console.log("Property updated successfully:", updatedProperty);
+      return propertyResponse;
+    } catch (error: any) {
+      console.error("Error in updateVendorProperty:", error);
+      throw new Error("Error updating property: " + error.message);
+    }
+  },
+
+
+  getPropertyById: async (propertyId: string) => {
+    try {
+      // Call the repository function to get the property by ID
+      const property = await getPropertyByIdFromDB(propertyId);
+      return property;
+    } catch (error) {
+      console.error("Error in getPropertyById:", error);
+      throw new Error("Error fetching property by ID");
+    }
+  },
+
+  updateBookingStatusAccept : async (bookingId : string) => {
+    try {
+      return await acceptBookingStatus(bookingId);
+    } catch (error) {
+      console.error("Error in updateBookingStatusAccept:", error);
+      throw error;
+    }
+  },
+
+  updateBookingStatusReject: async (bookingId: string) => {
+    try {
+      return await rejectBookingStatus(bookingId);
+    } catch (error) {
+      console.error("Error rejecting booking:", error);
+      throw error;
+    }
+  },
+
+  getChatHistory: async (chatId : string) => {
+    try {
+      const chatHistory = await fetchChatHistory(chatId);
+      return chatHistory;
+    } catch (error) {
+      console.error("Error in interactor fetching chat history:", error);
+      throw new Error("Failed to fetch chat history");
+    }
+  },
+
+  getChatList: async (vendorId : string) => {
+    try {
+      return await fetchChatList(vendorId);
+    } catch (error) {
+      console.error('Error in fetching chat list from interactor:', error);
+      throw new Error('Failed to get chat list');
+    }
+  },
+
+
+  sendMessage: async (
+    chatId: string,
+    senderId: string,
+    message: string,
+    recipientId: string,
+    senderModel: 'User' | 'Vendor',  
+    recipientModel: 'User' | 'Vendor' 
+  ) => {
+    try {
+      const messageSent = await sendMessage(chatId, senderId, message, recipientId, senderModel, recipientModel);
+      return messageSent;
+    } catch (error) {
+      console.error('Error in sending message through interactor:', error);
+      throw new Error('Failed to send message');
+    }
+  }
+
+
+
 };

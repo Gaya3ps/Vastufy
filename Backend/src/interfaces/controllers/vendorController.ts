@@ -7,6 +7,8 @@ import { updateVendor } from "../../infrastructure/repositories/mongoVendorrepos
 import mongoose from "mongoose";
 import adminInteractor from "../../domain/usecases/auth/adminInteractor";
 import { PropertyDataRequest } from "../../domain/entities/types/propertyType";
+import { uploadToS3 } from "../../utils/s3Uploader";
+import { PropertyModel } from "../../infrastructure/database/dbModel/propertyModel";
 
 export default {
   vendorRegister: async (req: Request, res: Response, next: NextFunction) => {
@@ -163,13 +165,10 @@ export default {
 
   addProperty: async (req: Request, res: Response) => {
     try {
-      // console.log(req.body, "Received form data");
+      console.log(req.body, "Received form data");
       const vendorId = Array.isArray(req.query.vendorId)
         ? req.query.vendorId[0]
         : (req.query.vendorId as string);
-      // console.log(vendorId, "blaaaaaaaaaaah");
-
-      // Extract property details from the request body
       const {
         propertyType,
         expectedPrice,
@@ -189,15 +188,23 @@ export default {
         parking,
         washrooms,
         district,
+        city,
         locality,
         zip,
         address,
         landmark,
+        bedrooms,
+        balconies,
+        furnishingStatus,
+        powerBackup,
+        roadAccessibility,
+        locationAdvantages,
         amenities,
       } = req.body;
       if (!vendorId || typeof vendorId !== "string") {
         return res.status(400).json({ message: "Invalid Vendor ID" });
       }
+      
 
       // Validate the vendorId (ensure it's a single string, not an array)
 
@@ -232,11 +239,18 @@ export default {
         parking,
         washrooms,
         district,
+        city,
         locality,
         zip,
         address,
         landmark,
         media, // Pass the media files
+        bedrooms,
+        balconies,
+        furnishingStatus,
+        powerBackup,
+        roadAccessibility,
+        locationAdvantages: locationAdvantages || [],
         amenities: amenities || [], // Default to empty array if no amenities
       };
 
@@ -247,12 +261,10 @@ export default {
       );
 
       // Return a success response
-      res
-        .status(200)
-        .json({
-          message: "Property added successfully",
-          property: savedProperty,
-        });
+      res.status(200).json({
+        message: "Property added successfully",
+        property: savedProperty,
+      });
     } catch (error: any) {
       console.error("Error in addProperty:", error);
       res.status(500).json({
@@ -277,4 +289,376 @@ export default {
       res.status(500).json({ error: "Failed to get category" });
     }
   },
+
+  getBookings: async (req: Request, res: Response) => {
+    try {
+      const vendorId = req.params.vendorId;
+
+      // Check if vendorId is provided
+      if (!vendorId) {
+        return res.status(400).json({ error: "Vendor ID is required" });
+      }
+
+      // Call the interactor to get the booking list
+      const bookingList = await vendorInteractor.getBookingList(vendorId);
+
+      // Respond with the booking list
+      return res.status(200).json(bookingList);
+    } catch (error) {
+      console.error("Error fetching bookings:", error);
+      return res.status(500).json({ error: "Failed to fetch bookings" });
+    }
+  },
+
+  // New updateProperty method
+  updateProperty: async (req: Request, res: Response) => {
+    try {
+      console.log('reach aaaaay');
+      
+      const { propertyId } = req.params;
+      const vendorId = req.query.vendorId as string;
+
+      if (!propertyId) {
+        return res.status(400).json({ message: "Property ID is required" });
+      }
+      if (!vendorId) {
+        return res.status(400).json({ message: "Vendor ID is required" });
+      }
+
+      const {
+        propertyType,
+        expectedPrice,
+        title,
+        description,
+        category,
+        subcategory,
+        ownershipStatus,
+        availableStatus,
+        saletype,
+        ageofproperty,
+        carpetArea,
+        builtUpArea,
+        plotArea,
+        totalFloors,
+        floorNo,
+        parking,
+        washrooms,
+        district,
+        city,
+        locality,
+        zip,
+        address,
+        landmark,
+        bedrooms,
+        balconies,
+        furnishingStatus,
+        powerBackup,
+        roadAccessibility,
+        locationAdvantages,
+        amenities,
+      } = req.body;
+
+      const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+      const media = files?.media || [];
+
+      const propertyData: PropertyDataRequest = {
+        propertyType,
+        expectedPrice,
+        title,
+        description,
+        category,
+        subcategory,
+        ownershipStatus,
+        availableStatus,
+        saletype,
+        ageofproperty,
+        carpetArea,
+        builtUpArea,
+        plotArea,
+        totalFloors,
+        floorNo,
+        parking,
+        washrooms,
+        district,
+        city,
+        locality,
+        zip,
+        address,
+        landmark,
+        media,
+        bedrooms,
+        balconies,
+        furnishingStatus,
+        powerBackup,
+        roadAccessibility,
+        locationAdvantages: locationAdvantages || [],
+        amenities: amenities || [],
+      };
+
+      const updatedProperty = await vendorInteractor.updateVendorProperty(
+        propertyId,
+        vendorId,
+        propertyData
+      );
+
+      res.status(200).json({
+        message: "Property updated successfully",
+        property: updatedProperty,
+      });
+    } catch (error: any) {
+      console.error("Error in updateProperty:", error);
+      res.status(500).json({
+        message: "Failed to update property",
+        error: error.message,
+      });
+    }
+  },
+
+// edit property
+//  updateProperty : async (req: Request, res: Response) => {
+//     try {
+//       console.log('reach aaaaay');
+  
+//       const { propertyId } = req.params;
+//       const vendorId = req.query.vendorId as string;
+  
+//       if (!propertyId) {
+//         return res.status(400).json({ message: 'Property ID is required' });
+//       }
+//       if (!vendorId) {
+//         return res.status(400).json({ message: 'Vendor ID is required' });
+//       }
+  
+//       const {
+//         propertyType,
+//         expectedPrice,
+//         title,
+//         description,
+//         category,
+//         subcategory,
+//         ownershipStatus,
+//         availableStatus,
+//         saletype,
+//         ageofproperty,
+//         carpetArea,
+//         builtUpArea,
+//         plotArea,
+//         totalFloors,
+//         floorNo,
+//         parking,
+//         washrooms,
+//         district,
+//         city,
+//         locality,
+//         zip,
+//         address,
+//         landmark,
+//         bedrooms,
+//         balconies,
+//         furnishingStatus,
+//         powerBackup,
+//         roadAccessibility,
+//         locationAdvantages,
+//         amenities,
+//       } = req.body;
+  
+//       console.log(category,'hhhhhhhhhhhhhhhhhhhhhhh');
+
+//       const files = req.files as { [fieldname: string]: Express.Multer.File[] };
+//       const media = files?.media || [];
+  
+//       // Step 1: Upload media files to S3 and get their URLs if new media files are provided
+//       const mediaUrls: string[] = [];
+//       for (const file of media) {
+//         const mediaUploadResult = await uploadToS3(file);
+//         mediaUrls.push(mediaUploadResult.Location);
+//       }
+  
+//       // Step 2: Build the property data
+//       const propertyData = {
+//         propertyType,
+//         expectedPrice,
+//         title,
+//         description,
+//         category,
+//         subcategory,
+//         ownershipStatus,
+//         availableStatus,
+//         saletype,
+//         ageofproperty,
+//         carpetArea,
+//         builtUpArea,
+//         plotArea,
+//         totalFloors,
+//         floorNo,
+//         parking,
+//         washrooms,
+//         district,
+//         city,
+//         locality,
+//         zip,
+//         address,
+//         landmark,
+//         bedrooms,
+//         balconies,
+//         furnishingStatus,
+//         powerBackup,
+//         roadAccessibility,
+//         locationAdvantages: locationAdvantages || [],
+//         amenities: amenities || [],
+//         mediaUrls,
+//       };
+  
+//       // Step 3: Convert category ID to ObjectId if necessary
+//       if (propertyData.category && typeof propertyData.category === 'object' && '_id' in propertyData.category) {
+//         propertyData.category = new mongoose.Types.ObjectId((propertyData.category as any)._id);
+//       } else if (typeof propertyData.category === 'string' && mongoose.Types.ObjectId.isValid(propertyData.category)) {
+//         propertyData.category = new mongoose.Types.ObjectId(propertyData.category);
+//       } else {
+//         throw new Error('Invalid category ID format');
+//       }
+  
+//       // Step 4: Update the property in the database
+//       const updatedProperty = await PropertyModel.findOneAndUpdate(
+//         { _id: propertyId, vendor: vendorId },
+//         { $set: propertyData },
+//         { new: true }
+//       ).lean();
+  
+//       if (!updatedProperty) {
+//         throw new Error('Property not found or does not belong to this vendor');
+//       }
+  
+//       // Step 5: Respond with the updated property data
+//       res.status(200).json({
+//         message: 'Property updated successfully',
+//         property: updatedProperty,
+//       });
+//     } catch (error: any) {
+//       console.error('Error in updateProperty:', error);
+//       res.status(500).json({
+//         message: 'Failed to update property',
+//         error: error.message,
+//       });
+//     }
+//   },
+
+
+
+
+
+
+
+  getPropertyById: async (req: Request, res: Response) => {
+    console.log("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa");
+
+    try {
+      const { id } = req.params;
+      console.log(id, "this is idd");
+      const property = await vendorInteractor.getPropertyById(id);
+      if (!property) {
+        return res.status(404).json({ message: "Property not found" });
+      }
+      console.log("Property in controller hereeee:", property);
+      res
+        .status(200)
+        .json({ message: "Fetched property successfully", property });
+    } catch (error: any) {
+      console.error("Error fetching property:", error);
+      res
+        .status(500)
+        .json({ message: "Failed to fetch property", error: error.message });
+    }
+  },
+
+
+// Controller function to accept a booking
+acceptBooking : async (req: Request, res: Response) => {
+  const { bookingId } = req.params;
+
+  try {
+    const acceptedBooking = await vendorInteractor.updateBookingStatusAccept(bookingId);
+    res.status(200).json({ message: "Booking accepted", booking: acceptedBooking });
+  } catch (error) {
+    console.error("Error accepting booking:", error);
+    res.status(500).json({ error: "Failed to accept booking" });
+  }
+},
+
+rejectBooking: async (req: Request, res: Response) => {
+  const { bookingId } = req.params;
+  try {
+    const rejectedBooking = await vendorInteractor.updateBookingStatusReject(bookingId);
+    res.status(200).json({ message: "Booking rejected successfully", booking: rejectedBooking });
+  } catch (error) {
+    console.error("Failed to reject booking:", error);
+    res.status(500).json({ error: "Failed to reject booking" });
+  }
+},
+
+fetchChatHistory: async (req: Request, res: Response) => {
+  const { chatId } = req.params;
+  console.log("Fetching chat history for chatId:", chatId);
+
+  try {
+    const chatHistory = await vendorInteractor.getChatHistory(chatId);
+    res.status(200).json({ messages: chatHistory });
+  } catch (error) {
+    console.error("Error fetching chat history:", error);
+    res.status(500).json({ error: "Failed to fetch chat history" });
+  }
+},
+
+fetchChatList: async(req: Request, res: Response) =>{
+
+  const { vendorId } = req.params;
+  console.log("rattttttttttt", vendorId);
+  
+
+  try {
+    const chatList = await vendorInteractor.getChatList(vendorId);
+    res.status(200).json(chatList);
+  } catch (error) {
+    console.error('Error in fetching chat list from controller:', error);
+    res.status(500).json({ message: 'Failed to fetch chat list' });
+  }
+},
+
+
+sendMessage: async (req: Request, res: Response) => {
+  const { chatId } = req.params;
+  const { senderId, recipientId, senderModel, recipientModel, message } = req.body;
+
+  console.log("Received chat ID:", chatId);
+  console.log("Request body data:", req.body);
+
+  // Validate the data
+  if (!mongoose.Types.ObjectId.isValid(recipientId)) {
+    console.error("Invalid recipientId:", recipientId);
+    return res.status(400).json({ message: "Invalid recipientId" });
+  }
+  
+  if (!["User", "Vendor"].includes(recipientModel)) {
+    console.error("Invalid recipientModel:", recipientModel);
+    return res.status(400).json({ message: "Invalid recipientModel" });
+  }
+
+  try {
+    const sentMessage = await vendorInteractor.sendMessage(
+      chatId,
+      senderId,
+      message,
+      recipientId,
+      senderModel,
+      recipientModel
+    );
+
+    res.status(200).json({ message: "Message sent successfully", sentMessage });
+  } catch (error) {
+    console.error("Error in sending message:", error);
+    res.status(500).json({ message: "Failed to send message" });
+  }
+}
+
+
 };

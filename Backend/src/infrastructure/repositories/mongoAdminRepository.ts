@@ -6,6 +6,8 @@ import { log } from "console";
 import { Category } from "../database/dbModel/categoryModel";
 import { Subcategory } from "../database/dbModel/subCategoryModel";
 import { PropertyModel } from "../database/dbModel/propertyModel";
+import { populate } from "dotenv";
+import { SubscriptionPlanModel } from "../database/dbModel/subscriptionPlanModel";
 
 export const findAdmin = async (email: string) => {
   return await Admin.findOne({ email });
@@ -242,25 +244,21 @@ try {
 };
 
 
-export const listProperties = async () =>{
-  try {
-    const listedProperties = await PropertyModel.find().populate('category');
-    console.log(listProperties,"kitiyo illae?");
-    
-    return listedProperties;
-  }catch (error) {
-    throw new Error(
-      error instanceof Error ? error.message : "Error fetching properties"
-    );
-  }
-};
+// export const listProperties = async () =>{
+//   try {
+//     const listedProperties = await PropertyModel.find().populate('category');
+//     return listedProperties;
+//   }catch (error) {
+//     throw new Error(
+//       error instanceof Error ? error.message : "Error fetching properties"
+//     );
+//   }
+// };
 
 
 export const propertyList = async () =>{
   try {
     const listedProperties = await PropertyModel.find({is_verified : false}).populate('vendor');
-    console.log(listProperties,"kitiyo illae?");
-    
     return listedProperties;
   }catch (error) {
     throw new Error(
@@ -268,3 +266,52 @@ export const propertyList = async () =>{
     );
   }
 };
+
+export const getPropertyById = async (id: string) => {
+  return await PropertyModel.findById(id).populate('vendor').populate('category');
+};
+
+ export const updatePropertyVerificationStatus = async( id: string,
+  is_verified: boolean
+) => {
+  return await PropertyModel.findByIdAndUpdate(
+    id,
+    { is_verified: true },
+    { new: true }
+  );
+};
+
+
+export const addSubscriptionPlanToDB = async (subscriptionData: {
+  planName: string;
+  price: number;
+  features: string;
+  maxListings: number;
+  prioritySupport: boolean;
+}) => {
+  try {
+       // Convert prioritySupport from boolean to 'yes' or 'no'
+       const formattedSubscriptionData = {
+        ...subscriptionData,
+        prioritySupport: subscriptionData.prioritySupport ? 'yes' : 'no', // Boolean to string conversion
+      };
+  
+    const newSubscriptionPlan = new SubscriptionPlanModel(subscriptionData);
+    const savedSubscriptionPlan = await newSubscriptionPlan.save();
+    return savedSubscriptionPlan;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+export const listSubscriptionPlans = async()=>{
+  try {
+    const listedSubscriptionPlans = await SubscriptionPlanModel.find();
+    return listedSubscriptionPlans;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+}
+
+
+

@@ -9,6 +9,8 @@ import VendorDetail from "../../pages/admin/VendorDetail";
 import Category from "../../pages/admin/Category";
 import Properties from "../../pages/admin/Properties";
 import PropertyVerify from "../../pages/admin/PropertyVerify";
+import PropertyDetail from "../../pages/admin/PropertyDetail";
+import SubscriptionPlans from "../../pages/admin/SubscriptionPlans";
 const AdminRoutes = () => {
   return (
     <>
@@ -22,6 +24,8 @@ const AdminRoutes = () => {
         <Route path="/category" element={<Category />} />
         <Route path="/properties" element={<Properties />} />
         <Route path ="/propertyverify" element={<PropertyVerify/>} />
+        <Route path ="/property/:propertyId" element ={<PropertyDetail/>} />
+        <Route path ="/subscriptionplans" element ={<SubscriptionPlans/>} />
       </Routes>
     </>
   );

@@ -1,44 +1,45 @@
-import React, { useEffect, useState } from 'react';
-import VendorSidebar from '../../components/VendorSidebar';
-import axiosInstanceVendor from '../../services/axiosInstanceVendor';
-import { useSelector } from 'react-redux';
-import { selectVendor } from '../../features/vendor/vendorSlice';
+import React, { useEffect, useState } from "react";
+import VendorSidebar from "../../components/VendorSidebar";
+import axiosInstanceVendor from "../../services/axiosInstanceVendor";
+import { useNavigate } from "react-router-dom"; 
+import { useSelector } from "react-redux";
+import { selectVendor } from "../../features/vendor/vendorSlice";
 
 function PropertyList() {
   const [properties, setProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-
-    // Fetch vendorId from Redux
-    const vendor = useSelector(selectVendor); 
-    const vendorId = vendor.id; 
-    console.log(vendorId,"blooooooooooo");
-    
+  // Fetch vendorId from Redux
+  const vendor = useSelector(selectVendor);
+  const vendorId = vendor.id;
+  const navigate = useNavigate(); 
 
   // Fetch properties when the component mounts
   useEffect(() => {
     const fetchProperties = async () => {
       try {
-        const response = await axiosInstanceVendor.get(`/properties/${vendorId}`);
+        const response = await axiosInstanceVendor.get(
+          `/properties/${vendorId}`
+        );
         console.log(response.data, "Fetched properties");
-        
+
         // Assuming the 'properties' field is in the response and reverse to show newest first
         setProperties(response.data.properties.properties.reverse());
         setLoading(false);
       } catch (error) {
-        setError('Error fetching properties');
+        setError("Error fetching properties");
         setLoading(false);
       }
     };
     if (vendorId) {
-        fetchProperties(); // Fetch properties when the vendorId is available
-      }
-    }, [vendorId])
+      fetchProperties(); // Fetch properties when the vendorId is available
+    }
+  }, [vendorId]);
 
   const handleEdit = (id) => {
     console.log(`Edit property with ID: ${id}`);
-    // Add logic to handle editing the property
+    navigate(`/vendor/edit-property/${id}`); // Navigate to EditProperty page with property ID
   };
 
   const handleSoldOut = (id) => {
@@ -92,18 +93,29 @@ function PropertyList() {
                   </div>
                 </div>
                 <div className="mt-4">
-                  <h2 className="text-2xl font-semibold text-gray-800 mb-2">{property.title}</h2>
+                  <h2 className="text-2xl font-semibold text-gray-800 mb-2">
+                    {property.title}
+                  </h2>
                   <p className="text-lg text-gray-600 mb-1">
-                    Price: <span className="font-bold">${property.expectedPrice}</span>
+                    Price:{" "}
+                    <span className="font-bold">₹{property.expectedPrice}</span>
+                  </p>
+
+                  <p className="text-md text-gray-500 mb-1">
+                    Category:{" "}
+                    <span className="font-medium">
+                      {property.category.name}
+                    </span>
                   </p>
                   <p className="text-md text-gray-500 mb-1">
-                    Category: <span className="font-medium">{property.category.name}</span>
+                    Location:{" "}
+                    <span className="font-medium">{property.address}</span>
                   </p>
                   <p className="text-md text-gray-500 mb-1">
-                    Location: <span className="font-medium">{property.address}</span>
-                  </p>
-                  <p className="text-md text-gray-500 mb-1">
-                    Owner: <span className="font-medium capitalize">{property.ownershipStatus}</span>
+                    Owner:{" "}
+                    <span className="font-medium capitalize">
+                      {property.ownershipStatus}
+                    </span>
                   </p>
                 </div>
                 <div className="flex justify-between space-x-2 mt-6">
@@ -131,5 +143,4 @@ function PropertyList() {
   );
 }
 
-export default PropertyList
-
+export default PropertyList;

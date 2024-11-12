@@ -3,6 +3,7 @@ import { IUser, PaginatedUsers } from "../../entities/types/userType";
 import {
   addCategoryToDB,
   addSubCategoryToDB,
+  addSubscriptionPlanToDB,
   deleteCategoryInDB,
   deletesubCategoryInDB,
   editCategoryInDB,
@@ -11,11 +12,13 @@ import {
   getAllUsers,
   getPaginatedUsers,
   getPaginatedVendors,
+  getPropertyById,
   getVendorById,
   listCategory,
-  listProperties,
   listsubCategory,
+  listSubscriptionPlans,
   propertyList,
+  updatePropertyVerificationStatus,
   updateUserStatus,
   updateVendorStatus,
   updateVendorVerificationStatus,
@@ -248,16 +251,16 @@ export default {
     }
   },
 
-  getPropertyList : async()=>{
-    try {
-      const properties = await listProperties();
-      return properties;
-    } catch (error) {
-      throw new Error(
-        error instanceof Error ? error.message : "Unknown error occurred"
-      );
-    }
-  },
+  // getPropertyList : async()=>{
+  //   try {
+  //     const properties = await listProperties();
+  //     return properties;
+  //   } catch (error) {
+  //     throw new Error(
+  //       error instanceof Error ? error.message : "Unknown error occurred"
+  //     );
+  //   }
+  // },
 
   verifyProperties : async() => {
     try {
@@ -267,8 +270,63 @@ export default {
       console.error("Error verifying vendor:", error);
       throw new Error("Failed to verify vendor");
         }
-  }
+  },
+
+  
+  fetchPropertyById: async (propertyId: string) => {
+
+    try {
+      const property = await getPropertyById(propertyId);
+      console.log(property,"chukuchuku");
+      
+      return property;
+    } catch (error) {
+      console.error("Error fetching vendor by id:", error);
+      throw new Error("Failed to fetch vendor");
+    }
+  },
+
+  verifyProperty: async (id: string, is_verified: boolean) => {
+    try {
+      const updatedProperty = await updatePropertyVerificationStatus(id, is_verified);
+      return updatedProperty;
+    } catch (error) {
+      console.error("Error verifying vendor:", error);
+      throw new Error("Failed to verify vendor");
+    }
+  },
 
 
+  addSubscriptionPlan: async (subscriptionData: {
+    planName: string;
+    price: number;
+    features: string;
+    maxListings: number;
+    prioritySupport: boolean;
+  }) => {
+    try {
+      const formattedSubscriptionData = {
+        ...subscriptionData,
+        prioritySupport: subscriptionData.prioritySupport ? 'yes' : 'no', // Boolean to string conversion
+      };
 
-};
+      // Delegate to the repository to add the subscription plan
+      const savedSubscriptionPlan = await addSubscriptionPlanToDB(subscriptionData);
+      return savedSubscriptionPlan;
+    } catch (error) {
+      throw new Error(error instanceof Error ? error.message : "Unknown error occurred");
+    }
+  },
+
+  getAllSubscriptionPlans:async () => {
+    try {
+      const subscriptionPlans = await listSubscriptionPlans();
+      return subscriptionPlans;
+    } catch (error) {
+      throw new Error(
+        error instanceof Error ? error.message : "Unknown error occurred"
+      );
+    }
+},
+
+}

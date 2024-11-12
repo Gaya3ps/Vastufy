@@ -104,6 +104,29 @@ export const addVendorProperty = createAsyncThunk(
   }
 );
 
+export const updateVendorProperty = createAsyncThunk(
+  'vendor/updateVendorProperty',
+  async ({ id, vendorId, formDataToSend }, { rejectWithValue }) => { // Add vendorId here
+    try {
+      console.log(id, 'Property ID');
+      console.log(vendorId, 'Vendor ID');
+      
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log(key, value, "FormDataaaa content");
+      }
+
+      const response = await vendorService.updateVendorProperty(id, vendorId, formDataToSend); 
+      console.log(response, "Response from updateVendorProperty");
+
+      return response.data;
+    } catch (error) {
+      console.error("Error in updateVendorProperty:", error);
+      console.error("Error response data:", error.response?.data);
+      return rejectWithValue(error.response?.data || error.message);
+    }
+  }
+);
+
 
 
 const vendorSlice = createSlice({
@@ -197,7 +220,20 @@ const vendorSlice = createSlice({
       state.loading = false;
       state.error = action.payload;
       toast.error('Property addition failed!');
-    });
+    })
+    .addCase(updateVendorProperty.pending, (state) => {
+      state.loading = true;
+      state.error = null;
+    })
+    .addCase(updateVendorProperty.fulfilled, (state, action) => {
+      state.loading = false;
+      toast.success("Property updated successfully!");
+    })
+    .addCase(updateVendorProperty.rejected, (state, action) => {
+      state.loading = false;
+      state.error = action.payload;
+      toast.error("Failed to update property");
+    }) 
   },
 });
 

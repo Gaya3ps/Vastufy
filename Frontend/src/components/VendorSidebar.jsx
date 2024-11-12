@@ -1,84 +1,118 @@
-import React from 'react';
-import {useDispatch} from 'react-redux'
-import { HomeIcon, PlusIcon, DocumentTextIcon, ChatBubbleBottomCenterTextIcon, CreditCardIcon, UserIcon, ArrowLeftOnRectangleIcon } from '@heroicons/react/24/outline';
-import { Link, useNavigate } from 'react-router-dom';
-import Cookies from 'js-cookie';
-import { clearVendor } from '../features/vendor/vendorSlice' ;
-import logo from '../assets/VastufyLogo2.png'
+import React from "react";
+import { useDispatch } from "react-redux";
+import {
+  FaHome,
+  FaPlus,
+  FaFileAlt,
+  FaComments,
+  FaCreditCard,
+  FaUser,
+  FaSignOutAlt,
+  FaCalendarAlt,
+} from "react-icons/fa"; // Importing all icons from react-icons/fa
+import { Link, useNavigate } from "react-router-dom";
+import Cookies from "js-cookie";
+import { clearVendor } from "../features/vendor/vendorSlice";
+import logo from "../assets/VastufyLogo2.png";
 
 const VendorSidebar = () => {
-
-
   const navigate = useNavigate();
-  const dispatch = useDispatch()
-  
+  const dispatch = useDispatch();
 
   const handleLogout = () => {
-    dispatch(clearVendor())
-    Cookies.remove('vendortoken'); // Remove vendor token cookie
-    navigate('/vendor/login'); // Redirect to vendor login page
+    dispatch(clearVendor());
+    Cookies.remove("vendortoken");
+    navigate("/vendor/login");
   };
 
   return (
     <div className="h-screen w-64 bg-white border-r">
       <div className="flex items-center justify-center mt-8">
-        <img src={logo} alt="Logo" className="h-28 w-auto mx-auto mb-3 -translate-x-14" />
+        <img
+          src={logo}
+          alt="Logo"
+          className="h-28 w-auto mx-auto mb-3 -translate-x-14"
+        />
       </div>
-      
+
       <nav className="mt-0">
         {/* Dashboard */}
-        <Link to="/vendor/home" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200">
-          <HomeIcon className="w-6 h-6 mr-2" />
+        <Link
+          to="/vendor/home"
+          className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200"
+        >
+          <FaHome className="w-6 h-6 mr-2" />
           Dashboard
         </Link>
-        
+
         {/* Add New Property */}
-        <Link to="/vendor/add-property" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200">
-          <PlusIcon className="w-6 h-6 mr-2" />
+        <Link
+          to="/vendor/add-property"
+          className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200"
+        >
+          <FaPlus className="w-6 h-6 mr-2" />
           Add New
         </Link>
 
         {/* My Properties */}
-        <Link to="/vendor/propertylist" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200">
-          <DocumentTextIcon className="w-6 h-6 mr-2" />
+        <Link
+          to="/vendor/propertylist"
+          className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200"
+        >
+          <FaFileAlt className="w-6 h-6 mr-2" />
           My Properties
         </Link>
 
+        {/* Bookings with FaCalendarAlt Icon */}
+        <Link
+          to="/vendor/bookings"
+          className="flex items-center px-4 py-2 mt-2 text-gray-700 hover:bg-gray-200"
+        >
+          <FaCalendarAlt className="w-6 h-6 mr-2" />
+          Bookings
+        </Link>
+
         {/* Enquiries */}
-        <Link to="/vendor/enquiries" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200">
-          <ChatBubbleBottomCenterTextIcon className="w-6 h-6 mr-2" />
+        <Link
+          to="/vendor/chats"
+          className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200"
+        >
+          <FaComments className="w-6 h-6 mr-2" />
           Enquiries
         </Link>
 
         {/* Payment */}
-        <Link to="/vendor/payment" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200">
-          <CreditCardIcon className="w-6 h-6 mr-2" />
+        <Link
+          to="/vendor/payment"
+          className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200"
+        >
+          <FaCreditCard className="w-6 h-6 mr-2" />
           Payment
         </Link>
       </nav>
-     
-        {/* My Profile */}
-        <Link to="/vendor/profile" className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200">
-          <UserIcon className="w-6 h-6 mr-2" />
-          My Profile
-        </Link>
 
- {/* Thin Line for Separation */}
- <hr className="my-4 border-t border-gray-300" />
+      {/* My Profile */}
+      <Link
+        to="/vendor/profile"
+        className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200"
+      >
+        <FaUser className="w-6 h-6 mr-2" />
+        My Profile
+      </Link>
 
+      {/* Thin Line for Separation */}
+      <hr className="my-4 border-t border-gray-300" />
 
-        <nav className="mt-1">
+      <nav className="mt-1">
         {/* Log Out */}
         <button
-  className=" flex items-center  px-4 py-2 text-gray-700 hover:bg-gray-200"
-  onClick={handleLogout}
->
-  <ArrowLeftOnRectangleIcon className="w-6 h-6 mr-2" />
-  Logout
-</button>
-
+          className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200"
+          onClick={handleLogout}
+        >
+          <FaSignOutAlt className="w-6 h-6 mr-2" />
+          Logout
+        </button>
       </nav>
-
     </div>
   );
 };

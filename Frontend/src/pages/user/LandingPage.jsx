@@ -1,86 +1,74 @@
-
 import React, { useState, useEffect } from 'react';
 import Header from '../../components/Header';
 import Footer from '../../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faMobileAlt, faHeadset, faHome, faSyncAlt, faCheckCircle,faTrophy} from '@fortawesome/free-solid-svg-icons';
+import { faChevronLeft, faChevronRight, faMobileAlt, faHeadset, faHome, faSyncAlt, faCheckCircle, faTrophy } from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
 function LandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [isHeaderVisible, setIsHeaderVisible] = useState(true);
   const [lastScrollY, setLastScrollY] = useState(0);
+  const [verifiedProperties, setVerifiedProperties] = useState([]);
+  const propertiesPerPage = 3; // Number of properties to show per slide
 
   // Slide content: images and text
   const slides = [
-    {
-      image: '/RE10.jpg',
-      text: 'Explore the Best Properties Across Kerala',
-    },
-    {
-      image: '/RE9.jpg',
-      text: 'A Home for Every Dream – Where Your Family’s Future Begins!',
-    },
-    {
-      image: '/RE5.avif',
-      text: 'Find Your Dream Home Today!',
-    },
+    { image: '/RE10.jpg', text: 'Explore the Best Properties Across Kerala' },
+    { image: '/RE9.jpg', text: 'A Home for Every Dream – Where Your Family’s Future Begins!' },
+    { image: '/RE5.avif', text: 'Find Your Dream Home Today!' },
   ];
 
+  // Fetch verified properties on component mount
+  useEffect(() => {
+    const fetchVerifiedProperties = async () => {
+      try {
+        const response = await axios.get('http://localhost:5000/api/users/properties');
+        const verifiedProps = response.data.properties;
+        setVerifiedProperties(verifiedProps);
+      } catch (error) {
+        console.error('Error fetching properties:', error);
+      }
+    };
 
- // Property listings
- const properties = [
-  { id: 1, name: 'Property 1', price: '₹ 50 Lakh', location: 'Kerala', image: 'https://via.placeholder.com/400x300?text=Property+1' },
-  { id: 2, name: 'Property 2', price: '₹ 60 Lakh', location: 'Kerala', image: 'https://via.placeholder.com/400x300?text=Property+2' },
-  { id: 3, name: 'Property 3', price: '₹ 70 Lakh', location: 'Kerala', image: 'https://via.placeholder.com/400x300?text=Property+3' },
-  { id: 4, name: 'Property 4', price: '₹ 80 Lakh', location: 'Kerala', image: 'https://via.placeholder.com/400x300?text=Property+4' },
-  { id: 5, name: 'Property 5', price: '₹ 90 Lakh', location: 'Kerala', image: 'https://via.placeholder.com/400x300?text=Property+5' },
-  { id: 6, name: 'Property 6', price: '₹ 1 Crore', location: 'Kerala', image: 'https://via.placeholder.com/400x300?text=Property+6' },
-];
-
-
-
-
-  // Slide navigation
-  const nextSlide = () => setCurrentSlide((prev) => (prev + 1) % slides.length);
-  const prevSlide = () => setCurrentSlide((prev) => (prev - 1 + slides.length) % slides.length);
-
-   // Auto slide effect
-   useEffect(() => {
-    const slideInterval = setInterval(() => {
-      nextSlide();
-    }, 5000); // Change slide every 5 seconds
-
-    return () => clearInterval(slideInterval); // Clean up on unmount
+    fetchVerifiedProperties();
   }, []);
 
+  // Auto slide effect (slower speed)
+  useEffect(() => {
+    const slideInterval = setInterval(() => {
+      setCurrentSlide((prev) => (prev + 1) % Math.ceil(verifiedProperties.length / propertiesPerPage));
+    }, 8000); // Slower auto-slide (8 seconds)
 
+    return () => clearInterval(slideInterval); // Clean up on unmount
+  }, [verifiedProperties]);
 
   // Handle scroll event
   const handleScroll = () => {
     const currentScrollY = window.scrollY;
-
-    if (currentScrollY > lastScrollY && currentScrollY > 50) {
-      setIsHeaderVisible(false); // Hide header on scroll down
-    } else {
-      setIsHeaderVisible(true); // Show header on scroll up
-    }
-
+    setIsHeaderVisible(currentScrollY < lastScrollY || currentScrollY <= 50);
     setLastScrollY(currentScrollY);
   };
 
   useEffect(() => {
-    // Add event listener for scroll
     window.addEventListener('scroll', handleScroll);
-
-    return () => {
-      // Clean up the event listener on unmount
-      window.removeEventListener('scroll', handleScroll);
-    };
+    return () => window.removeEventListener('scroll', handleScroll);
   }, [lastScrollY]);
+
+  // Calculate the total number of slides
+  const totalSlides = Math.ceil(verifiedProperties.length / propertiesPerPage);
+
+  // Handle manual navigation
+  const handlePrev = () => {
+    setCurrentSlide((prev) => (prev === 0 ? totalSlides - 1 : prev - 1));
+  };
+
+  const handleNext = () => {
+    setCurrentSlide((prev) => (prev + 1) % totalSlides);
+  };
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col">
-      {/* Conditionally render the header based on isHeaderVisible */}
       {isHeaderVisible && <Header />}
 
       {/* Slideshow */}
@@ -98,178 +86,183 @@ function LandingPage() {
               height: '100%',
             }}
           >
-
-   <div className="absolute inset-0 bg-black opacity-20"></div>
-
+            <div className="absolute inset-0 bg-black opacity-20"></div>
             <div className="flex items-center justify-center h-full relative z-10">
               <h2 className="text-4xl text-white font-bold shadow-md">{slide.text}</h2>
             </div>
           </div>
         ))}
-
-        {/* Navigation Buttons */}
-        <button
-          className="absolute top-1/2 left-4 transform -translate-y-1/2 text-white text-2xl bg-black bg-opacity-50 p-2 rounded-full"
-          onClick={prevSlide}
-        >
-          &#10094;
-        </button>
-        <button
-          className="absolute top-1/2 right-4 transform -translate-y-1/2 text-white text-2xl bg-black bg-opacity-50 p-2 rounded-full"
-          onClick={nextSlide}
-        >
-          &#10095;
-        </button>
       </section>
 
       {/* Search Bar */}
-      <section className="flex justify-center py-8">
+      {/* <section className="flex justify-center py-8">
         <input
           type="text"
           className="w-2/3 px-4 py-2 border border-gray-300 rounded-lg"
           placeholder="Search for properties, districts..."
         />
-        <button className="bg-blue-500 text-white px-4 py-2 rounded-lg ml-2">
-          Search
-        </button>
-      </section>
-
-      {/* Property Listings */}
-      {/* <section className="max-w-6xl mx-auto py-8">
-        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Featured Properties</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {[1, 2, 3, 4, 5, 6].map((property) => (
-            <div key={property} className="border rounded-lg overflow-hidden shadow-lg">
-              <img src={`https://via.placeholder.com/400x300?text=Property+${property}`} alt={`Property ${property}`} />
-              <div className="p-4">
-                <h4 className="text-lg font-bold">Property {property}</h4>
-                <p className="text-gray-600">Location: Kerala</p>
-                <p className="text-gray-600">Price: ₹ 50 Lakh</p>
-              </div>
-            </div>
-          ))}
-        </div>
+        <button className="bg-blue-500 text-white px-4 py-2 rounded-lg ml-2">Search</button>
       </section> */}
 
+      {/* Property Sliding Show */}
+      <section className="max-w-6xl mx-auto py-12 px-4 relative overflow-hidden bg-gray-50">
+        <h3 className="text-3xl font-bold text-blue-800 mb-8 text-center">Featured Properties</h3>
 
- {/* Property Sliding Show */}
- <section className="max-w-6xl mx-auto py-8 relative overflow-hidden">
-        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Featured Properties</h3>
-        <div className="flex transition-transform duration-500" style={{ transform: `translateX(-${currentSlide * 100}%)` }}>
-          {properties.map((property) => (
-            <div key={property.id} className="flex-shrink-0 w-full md:w-1/3 lg:w-1/4 p-4">
-              <div className="border rounded-lg overflow-hidden shadow-lg">
-                <img src={property.image} alt={property.name} className="w-full h-48 object-cover" />
-                <div className="p-4">
-                  <h4 className="text-lg font-bold">{property.name}</h4>
-                  <p className="text-gray-600">Location: {property.location}</p>
-                  <p className="text-gray-600">Price: {property.price}</p>
+        {/* Slider container with arrows */}
+        <div className="relative">
+          {/* Left Arrow */}
+          <button
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none"
+            style={{ zIndex: 20 }}
+            onClick={handlePrev}
+          >
+            <FontAwesomeIcon icon={faChevronLeft} />
+          </button>
+
+          {/* Slider content */}
+          <div className="overflow-hidden relative">
+            <div
+              className="flex transition-transform duration-500"
+              style={{
+                transform: `translateX(-${currentSlide * (100 / totalSlides)}%)`,
+                width: `${totalSlides * 100}%`,
+              }}
+            >
+              {Array.from({ length: totalSlides }).map((_, slideIndex) => (
+                <div
+                  key={slideIndex}
+                  className="flex-shrink-0 w-full flex justify-around"
+                  style={{ width: `${100 / totalSlides}%` }}
+                >
+                  {verifiedProperties
+                    .slice(slideIndex * propertiesPerPage, slideIndex * propertiesPerPage + propertiesPerPage)
+                    .map((property) => (
+                      <div
+                        key={property._id}
+                        className="w-1/3 p-4 hover:scale-105 transform transition duration-300 ease-in-out"
+                      >
+                        <div className="bg-white border border-gray-200 rounded-lg overflow-hidden shadow-lg hover:shadow-2xl transition duration-300 ease-in-out">
+                          <img
+                            src={property.mediaUrls[0]}
+                            alt={property.title}
+                            className="w-full h-56 object-cover transition-transform duration-300 transform hover:scale-110"
+                          />
+                          <div className="p-5">
+                            <h4 className="text-xl font-semibold text-blue-700">{property.title}</h4>
+                            <p className="text-gray-500 text-sm mt-1">
+                              {property.city}, {property.district}
+                            </p>
+                            <p className="text-lg font-semibold text-blue-600 mt-2">
+                              ₹ {property.expectedPrice.toLocaleString()}
+                            </p>
+                            <button className="mt-4 w-full py-2 text-center text-white font-semibold bg-blue-600 hover:bg-blue-700 transition duration-200 ease-in-out rounded-md">
+                              View Details
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                 </div>
-              </div>
+              ))}
             </div>
+          </div>
+
+          {/* Right Arrow */}
+          <button
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none"
+            style={{ zIndex: 20 }}
+            onClick={handleNext}
+          >
+            <FontAwesomeIcon icon={faChevronRight} />
+          </button>
+        </div>
+
+        {/* Dots */}
+        <div className="flex justify-center mt-4">
+          {Array.from({ length: totalSlides }).map((_, index) => (
+            <div
+              key={index}
+              className={`w-3 h-3 rounded-full mx-2 ${
+                index === currentSlide ? 'bg-blue-600' : 'bg-gray-300'
+              }`}
+            ></div>
           ))}
         </div>
-  
-
-                {/* Navigation Buttons for Property Slides */}
-                <button className="absolute top-1/2 left-0 transform -translate-y-1/2 text-white text-2xl bg-black bg-opacity-50 p-2 rounded-full" onClick={prevSlide}>
-          &#10094;
-        </button>
-        <button className="absolute top-1/2 right-0 transform -translate-y-1/2 text-white text-2xl bg-black bg-opacity-50 p-2 rounded-full" onClick={nextSlide}>
-          &#10095;
-        </button>
       </section>
-
-
-
 
       {/* Banner */}
-      <section className="bg-[#f5d0fe] py-12 text-center text-white">
-        <h2 className="text-3xl font-bold">Special Offers on Premium Properties!</h2>
-        <p className="mt-4">Get discounts and special offers on premium listings. Limited time only!</p>
-        <a href="/properties" className="mt-6 inline-block bg-white text-blue-500 px-6 py-3 rounded-lg shadow-md hover:bg-gray-100">
-          Explore Offers
-        </a>
-      </section>
-
-
-      
-
-      {/* Key Elements */}
-      <section className="bg-[#075985] py-12">
-  <h3 className="text-2xl font-bold text-white mb-4 text-center">OUR KEY ELEMENTS</h3>
-  <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
-    {/* Easy Access */}
-    <div className="bg-white p-6 rounded-lg shadow-md transform transition duration-300 hover:bg-blue-100 hover:scale-105 hover:shadow-lg">
-      <FontAwesomeIcon icon={faMobileAlt} className="text-blue-500 text-3xl mb-4" />
-      <h4 className="text-lg font-bold text-blue-500 mb-2">Easy Access</h4>
-      <p className="text-gray-600">Our platform is accessible anytime, anywhere, and on any device for your convenience.</p>
-    </div>
-
-    {/* Client Support */}
-    <div className="bg-white p-6 rounded-lg shadow-md transform transition duration-300 hover:bg-blue-100 hover:scale-105 hover:shadow-lg">
-      <FontAwesomeIcon icon={faHeadset} className="text-blue-500 text-3xl mb-4" />
-      <h4 className="text-lg font-bold text-blue-500 mb-2">Client Support</h4>
-      <p className="text-gray-600">Our dedicated support team is available 24/7 to assist you with any inquiries or issues.</p>
-    </div>
-
-    {/* Property Management */}
-    <div className="bg-white p-6 rounded-lg shadow-md transform transition duration-300 hover:bg-blue-100 hover:scale-105 hover:shadow-lg">
-      <FontAwesomeIcon icon={faHome} className="text-blue-500 text-3xl mb-4" />
-      <h4 className="text-lg font-bold text-blue-500 mb-2">Property Management</h4>
-      <p className="text-gray-600">Easily manage your property listings, inquiries, and visits with our comprehensive tools.</p>
-    </div>
-
-    {/* Regular Updates */}
-    <div className="bg-white p-6 rounded-lg shadow-md transform transition duration-300 hover:bg-blue-100 hover:scale-105 hover:shadow-lg">
-      <FontAwesomeIcon icon={faSyncAlt} className="text-blue-500 text-3xl mb-4" />
-      <h4 className="text-lg font-bold text-blue-500 mb-2">Regular Updates</h4>
-      <p className="text-gray-600">Stay updated with the latest property listings and market trends, curated regularly for you.</p>
-    </div>
-
-    {/* Quality Assurance */}
-    <div className="bg-white p-6 rounded-lg shadow-md transform transition duration-300 hover:bg-blue-100 hover:scale-105 hover:shadow-lg">
-      <FontAwesomeIcon icon={faCheckCircle} className="text-blue-500 text-3xl mb-4" />
-      <h4 className="text-lg font-bold text-blue-500 mb-2">Quality Assurance</h4>
-      <p className="text-gray-600">We ensure that all listed properties meet high-quality standards for your peace of mind.</p>
-    </div>
-
- {/* Consistency in Services */}
- <div className="bg-white p-6 rounded-lg shadow-md transform transition duration-300 hover:bg-blue-100 hover:scale-105 hover:shadow-lg">
-      <FontAwesomeIcon
-        icon={faTrophy}  // Use an icon that signifies consistency, such as a trophy
-        className="text-blue-500 text-3xl mb-4 transition duration-300 transform hover:text-white hover:text-4xl"
-      />
-      <h4 className="text-lg font-bold text-blue-500 mb-2">Consistency in Services</h4>
-      <p className="text-gray-600">We maintain a high level of service consistency, ensuring that your experience is seamless every time.</p>
-    </div>
-
-
+<section
+  className="relative flex items-center justify-center h-[500px] mx-auto max-w-6xl rounded-lg overflow-hidden shadow-lg my-12"
+  style={{
+    backgroundImage: `url('/banner1.jpg')`,
+    backgroundSize: 'cover',
+    backgroundPosition: 'center',
+    backgroundRepeat: 'no-repeat',
+  }}
+>
+  <div className="relative z-10 text-center text-white px-8">
+    <h2 className="text-4xl md:text-5xl font-extrabold leading-tight drop-shadow-md">
+      Special Offers on Premium Properties!
+    </h2>
+    <p className="mt-4 text-lg md:text-xl font-medium drop-shadow-md">
+      Discover exclusive discounts and offers on premium listings. Limited time only!
+    </p>
+    <a
+      href="/properties"
+      className="mt-8 inline-block bg-white text-blue-600 px-8 py-3 text-lg font-semibold rounded-lg shadow-md hover:bg-gray-100 transition-transform transform hover:scale-105"
+    >
+      Explore Offers
+    </a>
   </div>
 </section>
 
 
 
-{/* Explore by District */}
-<section className="max-w-6xl mx-auto py-8">
+{/* Key Elements */}
+<section className="bg-[#075985] py-12 mt-12">
+  <h3 className="text-2xl font-bold text-white mb-4 text-center">OUR KEY ELEMENTS</h3>
+  <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+    {[
+      { icon: faMobileAlt, title: 'Easy Access', text: 'Our platform is accessible anytime, anywhere, and on any device for your convenience.' },
+      { icon: faHeadset, title: 'Client Support', text: 'Our dedicated support team is available 24/7 to assist you with any inquiries or issues.' },
+      { icon: faHome, title: 'Property Management', text: 'Easily manage your property listings, inquiries, and visits with our comprehensive tools.' },
+      { icon: faSyncAlt, title: 'Regular Updates', text: 'Stay updated with the latest property listings and market trends, curated regularly for you.' },
+      { icon: faCheckCircle, title: 'Quality Assurance', text: 'We ensure that all listed properties meet high-quality standards for your peace of mind.' },
+      { icon: faTrophy, title: 'Consistency in Services', text: 'We maintain a high level of service consistency, ensuring that your experience is seamless every time.' },
+    ].map((element, index) => (
+      <div 
+        key={index} 
+        className="bg-white p-6 rounded-lg shadow-lg transform transition duration-300 hover:shadow-xl hover:scale-105"
+        style={{ backgroundColor: index % 2 === 0 ? '#f0f7ff' : '#ffffff' }}
+      >
+        <div 
+          className="bg-blue-100 p-4 rounded-full inline-flex items-center justify-center mb-4 shadow-md"
+          style={{ backgroundColor: index % 2 === 0 ? '#e2e8f0' : '#cfe3fc' }}
+        >
+          <FontAwesomeIcon icon={element.icon} className="text-blue-500 text-3xl" />
+        </div>
+        <h4 className="text-lg font-bold text-blue-600 mb-2">{element.title}</h4>
+        <p className="text-gray-600">{element.text}</p>
+      </div>
+    ))}
+  </div>
+</section>
+
+      {/* Explore by District */}
+      <section className="max-w-6xl mx-auto py-8">
         <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Explore by District</h3>
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           {['Ernakulam', 'Kollam', 'Trivandrum', 'Thrissur', 'Kottayam'].map((district) => (
-            <div
-              key={district}
-              className="p-4 border border-gray-300 rounded-lg text-center bg-white hover:bg-gray-100 cursor-pointer"
-            >
+            <div key={district} className="p-4 border border-gray-300 rounded-lg text-center bg-white hover:bg-gray-100 cursor-pointer">
               {district}
             </div>
           ))}
         </div>
       </section>
 
-
-    <Footer/>
+      <Footer />
     </div>
   );
 }
 
 export default LandingPage;
-

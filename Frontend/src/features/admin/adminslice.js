@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import adminService from './adminService';
+import axiosInstance from '../../services/axiosInstance';
 
 export const loginAdmin = createAsyncThunk(
   'admin/loginAdmin',
@@ -116,6 +117,21 @@ export const  deleteSubcategory = createAsyncThunk('admin/deleteSubcategory', as
     return rejectWithValue(error.response.data)
   }
 })
+
+
+export const addSubscriptionPlan = createAsyncThunk(
+  'admin/addSubscriptionPlan',
+  async (subscriptionData, { rejectWithValue }) => {
+    console.log(subscriptionData,"??//??//???");
+    try {
+      const response = await axiosInstance.post('http://localhost:5000/api/admin/add-subscription-plan', subscriptionData);
+      console.log(response,"gggggggggggggggggggggggggggg");
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 
 

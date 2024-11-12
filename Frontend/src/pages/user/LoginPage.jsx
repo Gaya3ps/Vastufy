@@ -25,7 +25,7 @@ const Login = () => {
 
   useEffect(() => {
     if (user && user.is_blocked === false) {
-      navigate("/landingpage");
+      navigate("/");
     }
   }, [user, navigate]);
 
@@ -75,7 +75,7 @@ const Login = () => {
     try {
       const response = await dispatch(loginUser(values)).unwrap();
       toast.success("User Login Successful");
-      navigate("/landingpage");
+      navigate("/");
     } catch (error) {
       const errorMessage = error.error?.message ||
         error.message ||

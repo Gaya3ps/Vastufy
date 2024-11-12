@@ -14,6 +14,9 @@ import {
   PropertyDataRequest,
   PropertyDataResponse,
 } from "../../domain/entities/types/propertyType";
+import { BookingModel } from "../database/dbModel/bookingModel";
+import ChatModel from "../database/dbModel/chatModel";
+import MessageModel from "../database/dbModel/messageModel";
 
 export const createVendor = async (
   vendorData: IVendor,
@@ -158,12 +161,15 @@ export const saveProperty = async (propertyData: any, vendorId: string) => {
     }
 
     // Save the property with the vendor reference
-    const newProperty = new PropertyModel({ ...propertyData, vendor: vendorId }); // Use 'vendor' instead of 'vendorId'
+    const newProperty = new PropertyModel({
+      ...propertyData,
+      vendor: vendorId,
+    }); // Use 'vendor' instead of 'vendorId'
     const savedProperty = await newProperty.save();
 
     await Vendor.findByIdAndUpdate(vendorId, {
-        $push: { properties: savedProperty._id },  // Add property to vendor's properties array
-      });
+      $push: { properties: savedProperty._id }, // Add property to vendor's properties array
+    });
 
     return savedProperty;
   } catch (error: any) {
@@ -171,22 +177,170 @@ export const saveProperty = async (propertyData: any, vendorId: string) => {
     throw new Error("Error saving property: " + error.message);
   }
 };
-
 export const listProperty = async (vendorId: string) => {
-    try {
-        console.log(vendorId,"nsjbsbsbhjsbhjsb");
-        
-      // Find properties by the vendor field (vendorId)
-    //   const listedProperties = await PropertyModel.find(
-    //     
-    //   ).populate("category");
-    const vendor = await Vendor.findById(vendorId).populate('properties');
-  
-      console.log(vendor, "Filtered properties by vendorId");
-  
-      return vendor ;
-    } catch (error: any) {
-      throw new Error(error.message);
+  try {
+    const vendor = await Vendor.findById(vendorId)
+      .populate({
+        path: "properties",
+        populate: {
+          path: "category", // Populate the category field
+          model: "Category", // Assuming Category is the name of the category model
+        },
+      });
+    return vendor;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
+};
+
+export const getAllProperties = async () => {
+  return await PropertyModel.find(
+    { is_verified: true }, // Only fetching verified properties
+    {
+      _id: 1,
+      title: 1,
+      description: 1,
+      category: 1,
+      subcategory: 1,
+      availableStatus: 1,
+      expectedPrice: 1,
+      address: 1,
     }
-  };
-  
+  ).populate("category", "name");
+};
+
+
+export const listBookings = async (vendorId: string) => {
+  try {
+    // Find bookings by vendorId
+    return await BookingModel.find({ vendorId }).populate('propertyId userId vendorId'); // Populating related fields if needed
+  } catch (error) {
+    console.error('Error fetching bookings from database:', error);
+    throw new Error('Database error while fetching bookings');
+  }
+};
+
+export const updatePropertyInDB = async (
+  propertyId: string,
+  vendorId: string,
+  propertyData: Partial<PropertyDataRequest>
+): Promise<PropertyDataResponse | null> => {
+  try {
+    // Find and update the property belonging to the vendor
+    const updatedProperty = await PropertyModel.findOneAndUpdate(
+      { _id: propertyId, vendor: vendorId }, // Only update if property belongs to vendor
+      { $set: propertyData }, // Update with new property data
+      { new: true } // Return the updated document
+    ).lean(); // Use lean() to get a plain JavaScript object
+
+    if (!updatedProperty) {
+      throw new Error("Property not found or does not belong to this vendor");
+    }
+
+    // Cast the updated document to PropertyDataResponse after ensuring required properties are present
+    return {
+      ...updatedProperty,
+      saletype: updatedProperty.saleType ?? "", // Convert or set defaults as needed
+      ageofproperty: updatedProperty.ageOfProperty ?? ""
+    } as PropertyDataResponse;
+  } catch (error: any) {
+    console.error("Error updating property:", error);
+    throw new Error("Failed to update property: " + error.message);
+  }
+};
+
+export const getPropertyByIdFromDB = async (propertyId: string) => {
+  try {
+    // Find the property by its ID and populate category and subcategory details if they exist
+    const property = await PropertyModel.findById(propertyId)
+      .populate("category", "name") // Populating category with only the name field
+      .populate("subcategory", "name"); // Populating subcategory with only the name field
+
+    if (!property) {
+      throw new Error(`Property with ID ${propertyId} not found`);
+    }
+
+    return property;
+  } catch (error) {
+    console.error("Error fetching property by ID:", error);
+    throw new Error("Failed to fetch property by ID");
+  }
+};
+
+export const acceptBookingStatus = async (bookingId : string) => {
+  try {
+    return await BookingModel.findByIdAndUpdate(
+      bookingId,
+      { status: "accepted" },
+      { new: true }
+    );
+  } catch (error) {
+    console.error("Error updating booking status to accepted:", error);
+    throw error;
+  }
+};
+
+export const rejectBookingStatus = async (bookingId: string) => {
+  return await BookingModel.findByIdAndUpdate(bookingId, { status: "rejected" }, { new: true });
+};
+
+export const fetchChatHistory = async (chatId : string) => {
+  try {
+    const messages = await MessageModel.find({ chatId })
+      .sort({ timestamp: 1 }) // Sort by timestamp to display messages in chronological order
+      .lean(); // Use lean for better performance if you’re only reading data
+
+    return messages;
+  } catch (error) {
+    console.error("Error fetching chat history from database:", error);
+    throw new Error("Failed to fetch chat history");
+  }
+}
+
+
+export const fetchChatList = async (vendorId :string ) => {
+  try {
+    const chatList = await ChatModel.find({ "users": vendorId })
+      .populate({
+        path: 'users',
+        match: { _id: { $ne: vendorId } }, // Exclude vendor from the populated users
+        select: 'name avatar' // Only include necessary fields
+      })
+      .populate('latestMessage', 'message timestamp')
+      .exec();
+
+    return chatList;
+  } catch (error) {
+    console.error('Error fetching chat list from database:', error);
+    throw new Error('Failed to fetch chat list');
+  }
+};
+
+export const sendMessage = async (
+  chatId: string,
+  senderId: string,
+  message: string,
+  recipientId: string,
+  senderModel: 'User' | 'Vendor',
+  recipientModel: 'User' | 'Vendor'
+) => {
+
+  try {
+    // Create a new message document
+    const newMessage = await MessageModel.create({
+      chatId,
+      senderId,
+      recipientId,
+      senderModel,
+      recipientModel,
+      message,
+      timestamp: new Date(),
+    });
+
+    console.log("Message saved to database:", newMessage);
+    return newMessage;
+  } catch (error) {
+    console.error('Error saving message to database:', error);
+    throw error;
+  }
+};

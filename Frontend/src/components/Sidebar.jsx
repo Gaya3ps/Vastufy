@@ -137,6 +137,23 @@ function Sidebar() {
           <span className="mx-4 font-medium">Category</span>
         </Link>
 
+
+
+    
+
+
+
+  {/* Subscription Plans */}
+  <Link
+          className="flex items-center px-4 py-2 mt-2 text-gray-600 dark:text-gray-200 hover:bg-[#083344]"
+          to="/admin/subscriptionplans"
+        >
+          <FaServicestack className="w-5 h-5" />
+          <span className="mx-4 font-medium">Subscription Plans</span>
+        </Link>
+
+
+
         <Link
           className="flex items-center px-4 py-2 mt-2 text-gray-600 dark:text-gray-200 hover:bg-[#083344]"
           to="/admin/login"

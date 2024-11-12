@@ -10,12 +10,17 @@ import ResetPassword from "../../pages/user/ResetPassword";
 import UserPrivateRoutes from "./UserPrivateRoutes";
 import UserProfile from "../../pages/user/UserProfile";
 import LandingPage from "../../pages/user/LandingPage";
+import Properties from "../../pages/user/Properties";
+import PropertyDetails from "../../pages/user/PropertyDetails";
+import BookingDetails from "../../pages/user/BookingDetails";
+import ChatPage from "../../pages/user/ChatPage";
+import ChatsList from "../../pages/user/ChatsList";
 
 const UserRoutes = () => {
   return (
     <>
       <Routes>
-        <Route path="/landingpage" element={<LandingPage />} />
+        <Route path="/" element={<LandingPage />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/otp-verification" element={<UserOtp />} />
         <Route path="/login" element={<LoginPage />} />
@@ -24,6 +29,12 @@ const UserRoutes = () => {
         <Route path="" element={<UserPrivateRoutes />}>
           {/* <Route path="/home" element={<Home />} /> */}
           <Route path="/profile" element={<UserProfile />} />
+          <Route path ="/properties" element = {<Properties/>} />
+          <Route path ="/propertydetails/:propertyId" element = {<PropertyDetails/>} />
+          <Route path ="/bookingdetails" element = {<BookingDetails/>} />
+          <Route path ="/chat/:chatId" element ={<ChatPage/>} />
+          <Route path ="/chatList" element ={<ChatsList/>} />
+
         </Route>
       </Routes>
     </>
