@@ -7,7 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
   faCheckCircle,
   faCloudUploadAlt,
-  faImage,
+  faExclamationTriangle,
 } from "@fortawesome/free-solid-svg-icons";
 import axiosInstanceVendor from "../../services/axiosInstanceVendor";
 import { useDispatch, useSelector } from "react-redux";
@@ -86,13 +86,50 @@ const AmenitiesSchema = Yup.object().shape({
     .required("Location advantages are required"),
 });
 
+function UpgradeModal({ onClose, onUpgrade }) {
+  return (
+    <div className="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-50 transition-opacity duration-300 ease-in-out">
+      <div className="bg-white p-8 rounded-2xl shadow-2xl w-full max-w-md mx-4 text-center transform transition-transform duration-500 ease-out scale-105 hover:scale-100">
+        <div className="flex flex-col items-center">
+          <div className="bg-yellow-100 p-4 rounded-full shadow-md mb-4">
+            <FontAwesomeIcon
+              icon={faExclamationTriangle}
+              className="text-yellow-600 text-4xl"
+            />
+          </div>
+          <h2 className="text-2xl font-bold mb-4 text-gray-800">
+            Upgrade Required
+          </h2>
+          <p className="text-gray-600 mb-6 text-sm leading-relaxed">
+            You have reached your maximum property listings. Upgrade your plan
+            to add more properties and unlock new features.
+          </p>
+          <div className="flex justify-between gap-4 mt-6 w-full">
+            <button
+              onClick={onClose}
+              className="flex-1 bg-gray-200 text-gray-700 py-2 rounded-lg shadow-md hover:bg-gray-300 transition-colors duration-200"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={onUpgrade}
+              className="flex-1 bg-blue-600 text-white py-2 rounded-lg shadow-md hover:bg-blue-700 transition-colors duration-200"
+            >
+              Upgrade
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 function AddProperty() {
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const vendor = useSelector(selectVendor);
   const vendorId = vendor.id;
-  console.log("vfvfvffvvvfvfvf", vendorId);
 
   const [step, setStep] = useState(1); // Tracks the current step
   const [formData, setFormData] = useState({}); // Stores all form data
@@ -100,6 +137,68 @@ function AddProperty() {
   const [categories, setCategories] = useState([]); // Store categories
   const [subcategories, setSubcategories] = useState([]); // Store subcategories
   const [mediaPreviews, setMediaPreviews] = useState([]);
+  const [subscriptionData, setSubscriptionData] = useState(null);
+  const [isLimitReached, setIsLimitReached] = useState(false);
+
+  // useEffect(() => {
+  //   const fetchVendorSubscription = async () => {
+  //     try {
+  //       // Fetch the vendor's subscription data on page load
+  //       const response = await axiosInstanceVendor.get(
+  //         `/getVendorSubscription/${vendorId}`
+  //       );
+  //       console.log(response.data, "qwerrtyyyyyyyfgyfrg");
+
+  //       // setSubscriptionData(response.data);
+
+  //       // // Check if the vendor has reached their listing limit
+  //       // if (response.data.listingsUsed >= response.data.maxListings) {
+  //       //   setIsLimitReached(true);
+  //       //   // alert("You have reached your maximum property listings. Please upgrade your plan to add more properties.");
+  //       //   // navigate("/vendor/upgrade"); // Redirect to upgrade page if limit is reached
+  //       // }
+  //     } catch (error) {
+  //       console.error("Error fetching subscription data:", error);
+  //     }
+  //   };
+
+  //   fetchVendorSubscription();
+  // }, [vendorId]);
+
+  useEffect(() => {
+    const fetchVendorSubscription = async () => {
+      try {
+        // Fetch the vendor's subscription data on page load
+        const response = await axiosInstanceVendor.get(
+          `/getVendorSubscription/${vendorId}`
+        );
+        const { maxListings, listingsUsed } = response.data;
+        console.log(response.data, "Fetched subscription data");
+
+        setSubscriptionData(response.data);
+
+        // Check if the vendor has reached their listing limit
+        if (listingsUsed >= maxListings) {
+          setIsLimitReached(true);
+          // alert("You have reached your maximum property listings. Please upgrade your plan to add more properties.");
+          // Optional: Redirect to upgrade page if limit is reached
+          // navigate("/vendor/upgrade");
+        }
+      } catch (error) {
+        console.error("Error fetching subscription data:", error);
+      }
+    };
+
+    fetchVendorSubscription();
+  }, [vendorId, navigate]);
+
+  // Handlers for the upgrade modal buttons
+  const handleCancel = () => navigate("/vendor/home");
+  const handleUpgrade = () => navigate("/vendor/subscriptions");
+
+  // if (isLimitReached) {
+  //   return <UpgradeModal onClose={handleCancel} onUpgrade={handleUpgrade} />;
+  // }
 
   //   fetch categories
   const fetchCategories = async () => {
@@ -114,7 +213,6 @@ function AddProperty() {
   const fetchSubCategories = async () => {
     try {
       const response = await axiosInstanceVendor.get("/subcategories");
-      console.log(response.data, "xxxxxooooooooooooooo");
       setSubcategories(response.data.subCategories);
     } catch (error) {
       console.error("Error fetching subcategories:", error);
@@ -139,14 +237,17 @@ function AddProperty() {
     }
   };
 
-
-
   // Final submit function with FormData handling
   const handleFinalSubmit = async (values) => {
+    if (!subscriptionData) {
+      console.error("Subscription data not available");
+      return;
+    }
+
     // Combine form data and selected vendorId
     const finalFormData = { ...formData, ...values };
-    console.log("Its final dataaaaaaa:", finalFormData); 
-  
+    console.log("Its final dataaaaaaa:", finalFormData);
+
     // Initialize FormData for media and other fields
     const formDataToSend = new FormData();
     Object.keys(finalFormData).forEach((key) => {
@@ -156,14 +257,14 @@ function AddProperty() {
         formDataToSend.append(key, finalFormData[key]);
       }
     });
-  
+
     // Handle media files if present
     if (values.media && values.media.length > 0) {
       values.media.forEach((file) => {
         formDataToSend.append("media", file);
       });
     }
-  
+
     try {
       // Dispatch the form data and vendorId separately
       await dispatch(addVendorProperty({ formDataToSend, vendorId }));
@@ -172,7 +273,6 @@ function AddProperty() {
       console.error("Error submitting property:", error);
     }
   };
-  
 
   const handleFileChange = (event, setFieldValue) => {
     const files = Array.from(event.currentTarget.files);
@@ -465,167 +565,222 @@ function AddProperty() {
       case 2:
         return (
           <Formik
-  initialValues={{
-    country: "India",
-    state: "Kerala",
-    district: "",
-    city: "", 
-    locality: "",
-    zip: "",
-    address: "",
-    landmark: "",
-  }}
-  validationSchema={LocationSchema}
-  onSubmit={(values, { setSubmitting }) => {
-    nextStep(values); // Move to the next step
-    setSubmitting(false); // Stop submission spinner
-  }}
->
-  {({ isSubmitting, setFieldValue }) => (
-    <Form className="space-y-6">
-      <div className="bg-white shadow-md p-6 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4">Listing Location</h2>
-        <p className="text-sm text-gray-600 mb-4">
-          Add the location of your property here. Select your country, state, district, locality, etc.
-        </p>
-
-        {/* Two-column layout for country and state */}
-        <div className="grid grid-cols-2 gap-6">
-          <div>
-            <label className="block text-sm font-medium mb-1">Country</label>
-            <Field
-              type="text"
-              name="country"
-              className="w-full border p-2 text-sm"
-              value="India"
-              readOnly
-            />
-            <ErrorMessage name="country" component="div" className="text-red-500 text-xs" />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-1">State</label>
-            <Field
-              type="text"
-              name="state"
-              className="w-full border p-2 text-sm"
-              value="Kerala"
-              readOnly
-            />
-            <ErrorMessage name="state" component="div" className="text-red-500 text-xs" />
-          </div>
-        </div>
-
-        {/* District field as a dropdown */}
-        <div className="mt-4">
-          <label className="block text-sm font-medium mb-1">District</label>
-          <Field
-            as="select"
-            name="district"
-            className="w-full border p-2 text-sm"
-            onChange={(e) => setFieldValue("district", e.target.value)}
+            initialValues={{
+              country: "India",
+              state: "Kerala",
+              district: "",
+              city: "",
+              locality: "",
+              zip: "",
+              address: "",
+              landmark: "",
+            }}
+            validationSchema={LocationSchema}
+            onSubmit={(values, { setSubmitting }) => {
+              nextStep(values); // Move to the next step
+              setSubmitting(false); // Stop submission spinner
+            }}
           >
-            <option value="">Select District</option>
-            <option value="Thiruvananthapuram">Thiruvananthapuram</option>
-            <option value="Kollam">Kollam</option>
-            <option value="Pathanamthitta">Pathanamthitta</option>
-            <option value="Alappuzha">Alappuzha</option>
-            <option value="Kottayam">Kottayam</option>
-            <option value="Idukki">Idukki</option>
-            <option value="Ernakulam">Ernakulam</option>
-            <option value="Thrissur">Thrissur</option>
-            <option value="Palakkad">Palakkad</option>
-            <option value="Malappuram">Malappuram</option>
-            <option value="Kozhikode">Kozhikode</option>
-            <option value="Wayanad">Wayanad</option>
-            <option value="Kannur">Kannur</option>
-            <option value="Kasaragod">Kasaragod</option>
-          </Field>
-          <ErrorMessage name="district" component="div" className="text-red-500 text-xs" />
-        </div>
+            {({ isSubmitting, setFieldValue }) => (
+              <Form className="space-y-6">
+                <div className="bg-white shadow-md p-6 rounded-lg">
+                  <h2 className="text-xl font-semibold mb-4">
+                    Listing Location
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Add the location of your property here. Select your country,
+                    state, district, locality, etc.
+                  </p>
 
-        {/* City field */}
-        <div className="mt-4">
-          <label className="block text-sm font-medium mb-1">City</label>
-          <Field
-            type="text"
-            name="city"
-            className="w-full border p-2 text-sm"
-            placeholder="Enter your city"
-          />
-          <ErrorMessage name="city" component="div" className="text-red-500 text-xs" />
-        </div>
+                  {/* Two-column layout for country and state */}
+                  <div className="grid grid-cols-2 gap-6">
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        Country
+                      </label>
+                      <Field
+                        type="text"
+                        name="country"
+                        className="w-full border p-2 text-sm"
+                        value="India"
+                        readOnly
+                      />
+                      <ErrorMessage
+                        name="country"
+                        component="div"
+                        className="text-red-500 text-xs"
+                      />
+                    </div>
 
-        {/* Locality field */}
-        <div className="mt-4">
-          <label className="block text-sm font-medium mb-1">Locality</label>
-          <Field
-            type="text"
-            name="locality"
-            className="w-full border p-2 text-sm"
-            placeholder="Enter your locality"
-          />
-          <ErrorMessage name="locality" component="div" className="text-red-500 text-xs" />
-        </div>
+                    <div>
+                      <label className="block text-sm font-medium mb-1">
+                        State
+                      </label>
+                      <Field
+                        type="text"
+                        name="state"
+                        className="w-full border p-2 text-sm"
+                        value="Kerala"
+                        readOnly
+                      />
+                      <ErrorMessage
+                        name="state"
+                        component="div"
+                        className="text-red-500 text-xs"
+                      />
+                    </div>
+                  </div>
 
-        {/* Zip/Postal Code field */}
-        <div className="mt-4">
-          <label className="block text-sm font-medium mb-1">Zip / Postal Code</label>
-          <Field
-            type="text"
-            name="zip"
-            className="w-full border p-2 text-sm"
-            placeholder="Enter postal code"
-          />
-          <ErrorMessage name="zip" component="div" className="text-red-500 text-xs" />
-        </div>
+                  {/* District field as a dropdown */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium mb-1">
+                      District
+                    </label>
+                    <Field
+                      as="select"
+                      name="district"
+                      className="w-full border p-2 text-sm"
+                      onChange={(e) =>
+                        setFieldValue("district", e.target.value)
+                      }
+                    >
+                      <option value="">Select District</option>
+                      <option value="Thiruvananthapuram">
+                        Thiruvananthapuram
+                      </option>
+                      <option value="Kollam">Kollam</option>
+                      <option value="Pathanamthitta">Pathanamthitta</option>
+                      <option value="Alappuzha">Alappuzha</option>
+                      <option value="Kottayam">Kottayam</option>
+                      <option value="Idukki">Idukki</option>
+                      <option value="Ernakulam">Ernakulam</option>
+                      <option value="Thrissur">Thrissur</option>
+                      <option value="Palakkad">Palakkad</option>
+                      <option value="Malappuram">Malappuram</option>
+                      <option value="Kozhikode">Kozhikode</option>
+                      <option value="Wayanad">Wayanad</option>
+                      <option value="Kannur">Kannur</option>
+                      <option value="Kasaragod">Kasaragod</option>
+                    </Field>
+                    <ErrorMessage
+                      name="district"
+                      component="div"
+                      className="text-red-500 text-xs"
+                    />
+                  </div>
 
-        {/* Address field */}
-        <div className="mt-4">
-          <label className="block text-sm font-medium mb-1">Address</label>
-          <Field
-            as="textarea"
-            name="address"
-            className="w-full border p-2 text-sm"
-            rows="3"
-            placeholder="Enter full address"
-          />
-          <ErrorMessage name="address" component="div" className="text-red-500 text-xs" />
-        </div>
+                  {/* City field */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium mb-1">
+                      City
+                    </label>
+                    <Field
+                      type="text"
+                      name="city"
+                      className="w-full border p-2 text-sm"
+                      placeholder="Enter your city"
+                    />
+                    <ErrorMessage
+                      name="city"
+                      component="div"
+                      className="text-red-500 text-xs"
+                    />
+                  </div>
 
-        {/* Landmark field */}
-        <div className="mt-4">
-          <label className="block text-sm font-medium mb-1">Landmark</label>
-          <Field
-            type="text"
-            name="landmark"
-            className="w-full border p-2 text-sm"
-            placeholder="Enter landmark"
-          />
-          <ErrorMessage name="landmark" component="div" className="text-red-500 text-xs" />
-        </div>
+                  {/* Locality field */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Locality
+                    </label>
+                    <Field
+                      type="text"
+                      name="locality"
+                      className="w-full border p-2 text-sm"
+                      placeholder="Enter your locality"
+                    />
+                    <ErrorMessage
+                      name="locality"
+                      component="div"
+                      className="text-red-500 text-xs"
+                    />
+                  </div>
 
-        {/* Navigation buttons */}
-        <div className="flex justify-between mt-6">
-          <button
-            type="button"
-            onClick={previousStep}
-            className="bg-gray-500 text-white py-2 px-4 rounded"
-          >
-            ← Back
-          </button>
-          <button
-            type="submit"
-            className="bg-blue-500 text-white py-2 px-4 rounded"
-            disabled={isSubmitting}
-          >
-            Next →
-          </button>
-        </div>
-      </div>
-    </Form>
-  )}
-</Formik>
+                  {/* Zip/Postal Code field */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Zip / Postal Code
+                    </label>
+                    <Field
+                      type="text"
+                      name="zip"
+                      className="w-full border p-2 text-sm"
+                      placeholder="Enter postal code"
+                    />
+                    <ErrorMessage
+                      name="zip"
+                      component="div"
+                      className="text-red-500 text-xs"
+                    />
+                  </div>
+
+                  {/* Address field */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Address
+                    </label>
+                    <Field
+                      as="textarea"
+                      name="address"
+                      className="w-full border p-2 text-sm"
+                      rows="3"
+                      placeholder="Enter full address"
+                    />
+                    <ErrorMessage
+                      name="address"
+                      component="div"
+                      className="text-red-500 text-xs"
+                    />
+                  </div>
+
+                  {/* Landmark field */}
+                  <div className="mt-4">
+                    <label className="block text-sm font-medium mb-1">
+                      Landmark
+                    </label>
+                    <Field
+                      type="text"
+                      name="landmark"
+                      className="w-full border p-2 text-sm"
+                      placeholder="Enter landmark"
+                    />
+                    <ErrorMessage
+                      name="landmark"
+                      component="div"
+                      className="text-red-500 text-xs"
+                    />
+                  </div>
+
+                  {/* Navigation buttons */}
+                  <div className="flex justify-between mt-6">
+                    <button
+                      type="button"
+                      onClick={previousStep}
+                      className="bg-gray-500 text-white py-2 px-4 rounded"
+                    >
+                      ← Back
+                    </button>
+                    <button
+                      type="submit"
+                      className="bg-blue-500 text-white py-2 px-4 rounded"
+                      disabled={isSubmitting}
+                    >
+                      Next →
+                    </button>
+                  </div>
+                </div>
+              </Form>
+            )}
+          </Formik>
         );
       case 3:
         return (
@@ -804,10 +959,8 @@ function AddProperty() {
                     </div>
                   </div>
 
-
-
-   {/* Additional fields for Bedrooms, Bathrooms, Balconies */}
-   <div className="grid grid-cols-3 gap-4 mt-4">
+                  {/* Additional fields for Bedrooms, Bathrooms, Balconies */}
+                  <div className="grid grid-cols-3 gap-4 mt-4">
                     <div>
                       <label className="block text-sm font-medium mb-1">
                         No. of Bedrooms
@@ -825,16 +978,15 @@ function AddProperty() {
                       />
                     </div>
 
-
-                 <div>
+                    <div>
                       <label className="block text-sm font-medium mb-1">
                         No. of Washrooms
                       </label>
                       <Field
-                       type="number"
+                        type="number"
                         name="washrooms"
                         className="w-full border p-2"
-                         placeholder="2"                  
+                        placeholder="2"
                       />
                       <ErrorMessage
                         name="washrooms"
@@ -842,7 +994,6 @@ function AddProperty() {
                         className="text-red-500 text-xs"
                       />
                     </div>
-
 
                     <div>
                       <label className="block text-sm font-medium mb-1">
@@ -929,12 +1080,8 @@ function AddProperty() {
                     </div>
                   </div>
 
-
-
-
                   {/* Two-column grid layout for Washrooms, Total Floors */}
                   <div className="grid grid-cols-2 gap-4 mt-4">
-
                     <div>
                       <label className="block text-sm font-medium mb-1">
                         Total Floors
@@ -1018,317 +1165,396 @@ function AddProperty() {
       case 5:
         return (
           <Formik
-          initialValues={{
-            amenities: [], // Initialize as an empty array
-            locationAdvantages: [], // Initialize as an empty array
-          }}
-          validationSchema={AmenitiesSchema}
-          onSubmit={(values) => handleFinalSubmit(values)}
-        >
-          {({ isSubmitting, setFieldValue, values }) => (
-            <Form className="space-y-6">
-              {/* Amenities Section */}
-              <div className="bg-white shadow-md p-6 rounded-lg">
-                <h2 className="text-xl font-semibold mb-4">Amenities</h2>
-                <p className="text-sm text-gray-600 mb-4">
-                  Select the amenities of the property that you want to add, from below.
-                </p>
-        
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Left Column */}
-                  <div>
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="amenities"
-                        value="Security"
-                        className="mr-2"
-                        checked={values.amenities?.includes("Security")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newAmenities = e.target.checked
-                            ? [...(values.amenities || []), e.target.value]
-                            : (values.amenities || []).filter((item) => item !== e.target.value);
-                          setFieldValue("amenities", newAmenities);
-                        }}
-                      />
-                      <label>Security</label>
+            initialValues={{
+              amenities: [], // Initialize as an empty array
+              locationAdvantages: [], // Initialize as an empty array
+            }}
+            validationSchema={AmenitiesSchema}
+            onSubmit={(values) => handleFinalSubmit(values)}
+          >
+            {({ isSubmitting, setFieldValue, values }) => (
+              <Form className="space-y-6">
+                {/* Amenities Section */}
+                <div className="bg-white shadow-md p-6 rounded-lg">
+                  <h2 className="text-xl font-semibold mb-4">Amenities</h2>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Select the amenities of the property that you want to add,
+                    from below.
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Left Column */}
+                    <div>
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="amenities"
+                          value="Security"
+                          className="mr-2"
+                          checked={values.amenities?.includes("Security")} // Safe navigation operator
+                          onChange={(e) => {
+                            const newAmenities = e.target.checked
+                              ? [...(values.amenities || []), e.target.value]
+                              : (values.amenities || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue("amenities", newAmenities);
+                          }}
+                        />
+                        <label>Security</label>
+                      </div>
+
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="amenities"
+                          value="Reserved Parking"
+                          className="mr-2"
+                          checked={values.amenities?.includes(
+                            "Reserved Parking"
+                          )} // Safe navigation operator
+                          onChange={(e) => {
+                            const newAmenities = e.target.checked
+                              ? [...(values.amenities || []), e.target.value]
+                              : (values.amenities || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue("amenities", newAmenities);
+                          }}
+                        />
+                        <label>Reserved Parking</label>
+                      </div>
+
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="amenities"
+                          value="Visitor Parking"
+                          className="mr-2"
+                          checked={values.amenities?.includes(
+                            "Visitor Parking"
+                          )} // Safe navigation operator
+                          onChange={(e) => {
+                            const newAmenities = e.target.checked
+                              ? [...(values.amenities || []), e.target.value]
+                              : (values.amenities || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue("amenities", newAmenities);
+                          }}
+                        />
+                        <label>Visitor Parking</label>
+                      </div>
+
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="amenities"
+                          value="WiFi"
+                          className="mr-2"
+                          checked={values.amenities?.includes("WiFi")} // Safe navigation operator
+                          onChange={(e) => {
+                            const newAmenities = e.target.checked
+                              ? [...(values.amenities || []), e.target.value]
+                              : (values.amenities || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue("amenities", newAmenities);
+                          }}
+                        />
+                        <label>WiFi</label>
+                      </div>
                     </div>
-        
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="amenities"
-                        value="Reserved Parking"
-                        className="mr-2"
-                        checked={values.amenities?.includes("Reserved Parking")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newAmenities = e.target.checked
-                            ? [...(values.amenities || []), e.target.value]
-                            : (values.amenities || []).filter((item) => item !== e.target.value);
-                          setFieldValue("amenities", newAmenities);
-                        }}
-                      />
-                      <label>Reserved Parking</label>
-                    </div>
-        
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="amenities"
-                        value="Visitor Parking"
-                        className="mr-2"
-                        checked={values.amenities?.includes("Visitor Parking")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newAmenities = e.target.checked
-                            ? [...(values.amenities || []), e.target.value]
-                            : (values.amenities || []).filter((item) => item !== e.target.value);
-                          setFieldValue("amenities", newAmenities);
-                        }}
-                      />
-                      <label>Visitor Parking</label>
-                    </div>
-        
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="amenities"
-                        value="WiFi"
-                        className="mr-2"
-                        checked={values.amenities?.includes("WiFi")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newAmenities = e.target.checked
-                            ? [...(values.amenities || []), e.target.value]
-                            : (values.amenities || []).filter((item) => item !== e.target.value);
-                          setFieldValue("amenities", newAmenities);
-                        }}
-                      />
-                      <label>WiFi</label>
+
+                    {/* Right Column */}
+                    <div>
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="amenities"
+                          value="R O Water System"
+                          className="mr-2"
+                          checked={values.amenities?.includes(
+                            "R O Water System"
+                          )} // Safe navigation operator
+                          onChange={(e) => {
+                            const newAmenities = e.target.checked
+                              ? [...(values.amenities || []), e.target.value]
+                              : (values.amenities || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue("amenities", newAmenities);
+                          }}
+                        />
+                        <label>R O Water System</label>
+                      </div>
+
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="amenities"
+                          value="Vastu Compliance"
+                          className="mr-2"
+                          checked={values.amenities?.includes(
+                            "Vastu Compliance"
+                          )} // Safe navigation operator
+                          onChange={(e) => {
+                            const newAmenities = e.target.checked
+                              ? [...(values.amenities || []), e.target.value]
+                              : (values.amenities || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue("amenities", newAmenities);
+                          }}
+                        />
+                        <label>Vastu Compliance</label>
+                      </div>
+
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="amenities"
+                          value="Intercom"
+                          className="mr-2"
+                          checked={values.amenities?.includes("Intercom")} // Safe navigation operator
+                          onChange={(e) => {
+                            const newAmenities = e.target.checked
+                              ? [...(values.amenities || []), e.target.value]
+                              : (values.amenities || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue("amenities", newAmenities);
+                          }}
+                        />
+                        <label>Intercom</label>
+                      </div>
+
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="amenities"
+                          value="Gas Pipe Line"
+                          className="mr-2"
+                          checked={values.amenities?.includes("Gas Pipe Line")} // Safe navigation operator
+                          onChange={(e) => {
+                            const newAmenities = e.target.checked
+                              ? [...(values.amenities || []), e.target.value]
+                              : (values.amenities || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue("amenities", newAmenities);
+                          }}
+                        />
+                        <label>Gas Pipe Line</label>
+                      </div>
+
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="amenities"
+                          value="Centralized AC"
+                          className="mr-2"
+                          checked={values.amenities?.includes("Centralized AC")} // Safe navigation operator
+                          onChange={(e) => {
+                            const newAmenities = e.target.checked
+                              ? [...(values.amenities || []), e.target.value]
+                              : (values.amenities || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue("amenities", newAmenities);
+                          }}
+                        />
+                        <label>Centralized AC</label>
+                      </div>
                     </div>
                   </div>
-        
-                  {/* Right Column */}
-                  <div>
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="amenities"
-                        value="R O Water System"
-                        className="mr-2"
-                        checked={values.amenities?.includes("R O Water System")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newAmenities = e.target.checked
-                            ? [...(values.amenities || []), e.target.value]
-                            : (values.amenities || []).filter((item) => item !== e.target.value);
-                          setFieldValue("amenities", newAmenities);
-                        }}
-                      />
-                      <label>R O Water System</label>
-                    </div>
-        
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="amenities"
-                        value="Vastu Compliance"
-                        className="mr-2"
-                        checked={values.amenities?.includes("Vastu Compliance")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newAmenities = e.target.checked
-                            ? [...(values.amenities || []), e.target.value]
-                            : (values.amenities || []).filter((item) => item !== e.target.value);
-                          setFieldValue("amenities", newAmenities);
-                        }}
-                      />
-                      <label>Vastu Compliance</label>
-                    </div>
-        
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="amenities"
-                        value="Intercom"
-                        className="mr-2"
-                        checked={values.amenities?.includes("Intercom")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newAmenities = e.target.checked
-                            ? [...(values.amenities || []), e.target.value]
-                            : (values.amenities || []).filter((item) => item !== e.target.value);
-                          setFieldValue("amenities", newAmenities);
-                        }}
-                      />
-                      <label>Intercom</label>
-                    </div>
-        
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="amenities"
-                        value="Gas Pipe Line"
-                        className="mr-2"
-                        checked={values.amenities?.includes("Gas Pipe Line")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newAmenities = e.target.checked
-                            ? [...(values.amenities || []), e.target.value]
-                            : (values.amenities || []).filter((item) => item !== e.target.value);
-                          setFieldValue("amenities", newAmenities);
-                        }}
-                      />
-                      <label>Gas Pipe Line</label>
-                    </div>
-        
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="amenities"
-                        value="Centralized AC"
-                        className="mr-2"
-                        checked={values.amenities?.includes("Centralized AC")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newAmenities = e.target.checked
-                            ? [...(values.amenities || []), e.target.value]
-                            : (values.amenities || []).filter((item) => item !== e.target.value);
-                          setFieldValue("amenities", newAmenities);
-                        }}
-                      />
-                      <label>Centralized AC</label>
-                    </div>
-                  </div>
+
+                  <ErrorMessage
+                    name="amenities"
+                    component="div"
+                    className="text-red-500 text-xs"
+                  />
                 </div>
-        
-                <ErrorMessage
-                  name="amenities"
-                  component="div"
-                  className="text-red-500 text-xs"
-                />
-              </div>
-        
-              {/* Location Advantages Section */}
-              <div className="bg-white shadow-md p-6 rounded-lg">
-                <h2 className="text-xl font-semibold mb-4">Location Advantages</h2>
-                <p className="text-sm text-gray-600 mb-4">
-                  Select the major landmarks within 5 km surroundings of the property that you want to add, from below.
-                </p>
-        
-                <div className="grid grid-cols-2 gap-4">
-                  {/* Left Column */}
-                  <div>
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="locationAdvantages"
-                        value="School"
-                        className="mr-2"
-                        checked={values.locationAdvantages?.includes("School")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newLocationAdvantages = e.target.checked
-                            ? [...(values.locationAdvantages || []), e.target.value]
-                            : (values.locationAdvantages || []).filter((item) => item !== e.target.value);
-                          setFieldValue("locationAdvantages", newLocationAdvantages);
-                        }}
-                      />
-                      <label>School</label>
+
+                {/* Location Advantages Section */}
+                <div className="bg-white shadow-md p-6 rounded-lg">
+                  <h2 className="text-xl font-semibold mb-4">
+                    Location Advantages
+                  </h2>
+                  <p className="text-sm text-gray-600 mb-4">
+                    Select the major landmarks within 5 km surroundings of the
+                    property that you want to add, from below.
+                  </p>
+
+                  <div className="grid grid-cols-2 gap-4">
+                    {/* Left Column */}
+                    <div>
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="locationAdvantages"
+                          value="School"
+                          className="mr-2"
+                          checked={values.locationAdvantages?.includes(
+                            "School"
+                          )} // Safe navigation operator
+                          onChange={(e) => {
+                            const newLocationAdvantages = e.target.checked
+                              ? [
+                                  ...(values.locationAdvantages || []),
+                                  e.target.value,
+                                ]
+                              : (values.locationAdvantages || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue(
+                              "locationAdvantages",
+                              newLocationAdvantages
+                            );
+                          }}
+                        />
+                        <label>School</label>
+                      </div>
+
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="locationAdvantages"
+                          value="Hospital"
+                          className="mr-2"
+                          checked={values.locationAdvantages?.includes(
+                            "Hospital"
+                          )} // Safe navigation operator
+                          onChange={(e) => {
+                            const newLocationAdvantages = e.target.checked
+                              ? [
+                                  ...(values.locationAdvantages || []),
+                                  e.target.value,
+                                ]
+                              : (values.locationAdvantages || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue(
+                              "locationAdvantages",
+                              newLocationAdvantages
+                            );
+                          }}
+                        />
+                        <label>Hospital</label>
+                      </div>
+
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="locationAdvantages"
+                          value="Air Port"
+                          className="mr-2"
+                          checked={values.locationAdvantages?.includes(
+                            "Air Port"
+                          )} // Safe navigation operator
+                          onChange={(e) => {
+                            const newLocationAdvantages = e.target.checked
+                              ? [
+                                  ...(values.locationAdvantages || []),
+                                  e.target.value,
+                                ]
+                              : (values.locationAdvantages || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue(
+                              "locationAdvantages",
+                              newLocationAdvantages
+                            );
+                          }}
+                        />
+                        <label>Air Port</label>
+                      </div>
                     </div>
-        
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="locationAdvantages"
-                        value="Hospital"
-                        className="mr-2"
-                        checked={values.locationAdvantages?.includes("Hospital")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newLocationAdvantages = e.target.checked
-                            ? [...(values.locationAdvantages || []), e.target.value]
-                            : (values.locationAdvantages || []).filter((item) => item !== e.target.value);
-                          setFieldValue("locationAdvantages", newLocationAdvantages);
-                        }}
-                      />
-                      <label>Hospital</label>
-                    </div>
-        
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="locationAdvantages"
-                        value="Air Port"
-                        className="mr-2"
-                        checked={values.locationAdvantages?.includes("Air Port")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newLocationAdvantages = e.target.checked
-                            ? [...(values.locationAdvantages || []), e.target.value]
-                            : (values.locationAdvantages || []).filter((item) => item !== e.target.value);
-                          setFieldValue("locationAdvantages", newLocationAdvantages);
-                        }}
-                      />
-                      <label>Air Port</label>
+
+                    {/* Right Column */}
+                    <div>
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="locationAdvantages"
+                          value="Shopping Mall"
+                          className="mr-2"
+                          checked={values.locationAdvantages?.includes(
+                            "Shopping Mall"
+                          )} // Safe navigation operator
+                          onChange={(e) => {
+                            const newLocationAdvantages = e.target.checked
+                              ? [
+                                  ...(values.locationAdvantages || []),
+                                  e.target.value,
+                                ]
+                              : (values.locationAdvantages || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue(
+                              "locationAdvantages",
+                              newLocationAdvantages
+                            );
+                          }}
+                        />
+                        <label>Shopping Mall</label>
+                      </div>
+
+                      <div className="flex items-center mb-2">
+                        <Field
+                          type="checkbox"
+                          name="locationAdvantages"
+                          value="Railway Station"
+                          className="mr-2"
+                          checked={values.locationAdvantages?.includes(
+                            "Railway Station"
+                          )} // Safe navigation operator
+                          onChange={(e) => {
+                            const newLocationAdvantages = e.target.checked
+                              ? [
+                                  ...(values.locationAdvantages || []),
+                                  e.target.value,
+                                ]
+                              : (values.locationAdvantages || []).filter(
+                                  (item) => item !== e.target.value
+                                );
+                            setFieldValue(
+                              "locationAdvantages",
+                              newLocationAdvantages
+                            );
+                          }}
+                        />
+                        <label>Railway Station</label>
+                      </div>
                     </div>
                   </div>
-        
-                  {/* Right Column */}
-                  <div>
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="locationAdvantages"
-                        value="Shopping Mall"
-                        className="mr-2"
-                        checked={values.locationAdvantages?.includes("Shopping Mall")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newLocationAdvantages = e.target.checked
-                            ? [...(values.locationAdvantages || []), e.target.value]
-                            : (values.locationAdvantages || []).filter((item) => item !== e.target.value);
-                          setFieldValue("locationAdvantages", newLocationAdvantages);
-                        }}
-                      />
-                      <label>Shopping Mall</label>
-                    </div>
-        
-                    <div className="flex items-center mb-2">
-                      <Field
-                        type="checkbox"
-                        name="locationAdvantages"
-                        value="Railway Station"
-                        className="mr-2"
-                        checked={values.locationAdvantages?.includes("Railway Station")} // Safe navigation operator
-                        onChange={(e) => {
-                          const newLocationAdvantages = e.target.checked
-                            ? [...(values.locationAdvantages || []), e.target.value]
-                            : (values.locationAdvantages || []).filter((item) => item !== e.target.value);
-                          setFieldValue("locationAdvantages", newLocationAdvantages);
-                        }}
-                      />
-                      <label>Railway Station</label>
-                    </div>
-                  </div>
+
+                  <ErrorMessage
+                    name="locationAdvantages"
+                    component="div"
+                    className="text-red-500 text-xs"
+                  />
                 </div>
-        
-                <ErrorMessage
-                  name="locationAdvantages"
-                  component="div"
-                  className="text-red-500 text-xs"
-                />
-              </div>
-        
-              <div className="flex justify-between mt-6">
-                <button
-                  type="button"
-                  onClick={previousStep}
-                  className="bg-gray-500 text-white py-2 px-4 rounded"
-                >
-                  ← Back
-                </button>
-                <button
-                  type="submit"
-                  className="bg-green-500 text-white py-2 px-4 rounded"
-                  disabled={isSubmitting}
-                >
-                  Submit property
-                </button>
-              </div>
-            </Form>
-          )}
-        </Formik>
-        
+
+                <div className="flex justify-between mt-6">
+                  <button
+                    type="button"
+                    onClick={previousStep}
+                    className="bg-gray-500 text-white py-2 px-4 rounded"
+                  >
+                    ← Back
+                  </button>
+                  <button
+                    type="submit"
+                    className="bg-green-500 text-white py-2 px-4 rounded"
+                    disabled={isSubmitting}
+                  >
+                    Submit property
+                  </button>
+                </div>
+              </Form>
+            )}
+          </Formik>
         );
       default:
         return null;
@@ -1358,6 +1584,11 @@ function AddProperty() {
           <h1 className="text-3xl font-bold text-gray-800">Add Property</h1>
           <VendorHeader />
         </div>
+
+        {/* Render UpgradeModal if limit is reached */}
+        {isLimitReached && (
+          <UpgradeModal onClose={handleCancel} onUpgrade={handleUpgrade} />
+        )}
 
         {/* Progress Header */}
         <div className="flex justify-between mb-8">

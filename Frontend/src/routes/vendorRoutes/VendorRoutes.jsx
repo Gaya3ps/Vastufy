@@ -12,6 +12,9 @@ import Bookings from "../../pages/vendor/Bookings";
 import EditProperty from "../../pages/vendor/EditProperty";
 import Chats from "../../pages/vendor/Chats";
 import Chat from "../../pages/vendor/Chat";
+import Subscriptions from "../../pages/vendor/Subscriptions";
+import SubscriptionSuccess from "../../pages/vendor/SubscriptionSuccess";
+import SubscriptionFailure from "../../pages/vendor/SubscriptionFailure";
 
 const VendorRoutes = () => {
   return (
@@ -30,6 +33,10 @@ const VendorRoutes = () => {
         <Route path="/edit-property/:id" element={<EditProperty />} />
         <Route path="/chats" element={<Chats />} />
         <Route path="/chat" element={<Chat />} />
+        <Route path ="/subscriptions" element={<Subscriptions />} /> 
+        <Route path = "/subscription-success" element ={<SubscriptionSuccess/>} />
+        <Route path = "/subscription-failed" element ={<SubscriptionFailure/>} />
+
       </Routes>
     </>
   );

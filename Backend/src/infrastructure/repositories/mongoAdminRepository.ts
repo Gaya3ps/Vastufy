@@ -313,5 +313,17 @@ export const listSubscriptionPlans = async()=>{
   }
 }
 
+export const changeToggleStatus = async (planId: string, status: boolean) => {
+  try {
+    return await SubscriptionPlanModel.findByIdAndUpdate(
+      planId,
+      { status },
+      { new: true } 
+    );
+  } catch (error) {
+    console.error('Error updating subscription plan status:', error);
+    throw new Error('Failed to update status');
+  }
+};
 
 

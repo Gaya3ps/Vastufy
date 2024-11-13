@@ -83,11 +83,11 @@ const VendorSidebar = () => {
 
         {/* Payment */}
         <Link
-          to="/vendor/payment"
+          to="/vendor/subscriptions"
           className="flex items-center px-4 py-2 text-gray-700 hover:bg-gray-200"
         >
           <FaCreditCard className="w-6 h-6 mr-2" />
-          Payment
+          Subscriptions
         </Link>
       </nav>
 

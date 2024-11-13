@@ -4,6 +4,7 @@ import {
   addCategoryToDB,
   addSubCategoryToDB,
   addSubscriptionPlanToDB,
+  changeToggleStatus,
   deleteCategoryInDB,
   deletesubCategoryInDB,
   editCategoryInDB,
@@ -26,6 +27,7 @@ import {
 import { Encrypt } from "../../helper/hashPassword";
 import { log } from "console";
 import { ICategory } from "../../entities/categoryType";
+import { SubscriptionPlanModel } from "../../../infrastructure/database/dbModel/subscriptionPlanModel";
 
 export default {
   loginAdmin: async (cred: { email: string; password: string }) => {
@@ -328,5 +330,21 @@ export default {
       );
     }
 },
+
+
+toggleStatus: async (planId: string, status: boolean) => {
+  try {
+    const updatedPlan = await SubscriptionPlanModel.findByIdAndUpdate(
+      planId,
+      { status },
+      { new: true } 
+    );
+    return updatedPlan;
+  } catch (error) {
+    console.error('Error updating subscription plan status:', error);
+    throw new Error('Failed to update status');
+  }
+}
+
 
 }

@@ -403,6 +403,20 @@ export default {
     }
 },
 
+toggleStatus : async(req: Request, res: Response) =>{
+  try {
+    const { planId, status } = req.body; 
+    const updatedPlan = await adminInteractor.toggleStatus(planId, status);
+    if (updatedPlan) {
+      res.status(200).json({ message: 'Status updated successfully', updatedPlan });
+    } else {
+      res.status(404).json({ error: 'Subscription plan not found' });
+    }
+  } catch (error) {
+    console.error('Failed to toggle status:', error);
+    res.status(500).json({ error: 'Failed to update status' });
+  }
+}
 
 }
 

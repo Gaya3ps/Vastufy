@@ -20,7 +20,7 @@ import logo from '../../assets/VastufyLogo2.png'
 const Login = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { loading, error, user } = useSelector((state) => state.auth);
+  const user = useSelector(selectUser)
   console.log(user);
 
   useEffect(() => {

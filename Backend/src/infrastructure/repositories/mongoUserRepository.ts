@@ -144,7 +144,6 @@ export const listProperty = async () => {
       })
       .exec(); // Execute the query
 
-    console.log(properties, "Verified properties");
     return properties;
   } catch (error: any) {
     throw new Error(`Error fetching properties: ${error.message}`);

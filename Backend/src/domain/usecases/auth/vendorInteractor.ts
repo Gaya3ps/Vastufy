@@ -20,6 +20,10 @@ import {
   fetchChatHistory,
   fetchChatList,
   sendMessage,
+  getVendorSubscription,
+  listedSubscriptionPlans,
+  addVendorToSubscription,
+  fetchSubscribedPlan,
 } from "../../../infrastructure/repositories/mongoVendorrepository";
 import { log } from "console";
 import { generateOTP } from "../../../utils/otpUtils";
@@ -314,10 +318,10 @@ export default {
         landmark,
         bedrooms,
         balconies,
-        furnishingStatus, 
+        furnishingStatus,
         powerBackup,
-        roadAccessibility, 
-        locationAdvantages, 
+        roadAccessibility,
+        locationAdvantages,
         media, // Media files (images/videos)
         amenities, // List of amenities
       } = propertyData;
@@ -356,10 +360,10 @@ export default {
         landmark,
         bedrooms,
         balconies,
-        furnishingStatus, 
+        furnishingStatus,
         powerBackup,
-        roadAccessibility, 
-        locationAdvantages, 
+        roadAccessibility,
+        locationAdvantages,
         mediaUrls, // URLs of uploaded media files
         amenities, // Amenities list
         vendor: vendorId, // Associate property with vendor
@@ -395,11 +399,11 @@ export default {
         address: savedProperty.address,
         landmark: savedProperty.landmark,
         bedrooms: savedProperty.bedrooms,
-        balconies:savedProperty.balconies,
-        furnishingStatus: savedProperty.furnishingStatus, 
+        balconies: savedProperty.balconies,
+        furnishingStatus: savedProperty.furnishingStatus,
         powerBackup: savedProperty.powerBackup,
-        roadAccessibility: savedProperty.roadAccessibility, 
-        locationAdvantages: savedProperty.locationAdvantages, 
+        roadAccessibility: savedProperty.roadAccessibility,
+        locationAdvantages: savedProperty.locationAdvantages,
         mediaUrls: savedProperty.mediaUrls, // Include uploaded media URLs
         amenities: savedProperty.amenities, // Include amenities
         createdAt: savedProperty.createdAt, // Date property was created
@@ -423,20 +427,18 @@ export default {
     }
   },
 
-
-  getBookingList : async (vendorId: string) => {
+  getBookingList: async (vendorId: string) => {
     try {
       // Call the repository to get the bookings for the vendor
       const bookingList = await listBookings(vendorId);
-      console.log(bookingList,'aaaaaaaaaaaaaaaaa');
-      
+      console.log(bookingList, "aaaaaaaaaaaaaaaaa");
+
       return bookingList;
     } catch (error) {
-      console.error('Error in interactor:', error);
-      throw new Error('Failed to get bookings');
+      console.error("Error in interactor:", error);
+      throw new Error("Failed to get bookings");
     }
   },
-
 
   updateVendorProperty: async (
     propertyId: string,
@@ -470,14 +472,14 @@ export default {
         landmark,
         bedrooms,
         balconies,
-        furnishingStatus, 
+        furnishingStatus,
         powerBackup,
-        roadAccessibility, 
-        locationAdvantages, 
-        media, 
+        roadAccessibility,
+        locationAdvantages,
+        media,
         amenities,
       } = propertyData;
-  
+
       // Step 1: Upload media files to S3 and get their URLs if new media files are provided
       const mediaUrls: string[] = [];
       if (media && media.length > 0) {
@@ -486,7 +488,7 @@ export default {
           mediaUrls.push(mediaUploadResult.Location);
         }
       }
-  
+
       // Step 2: Construct updated property data
       const updatedPropertyData = {
         propertyType,
@@ -514,22 +516,26 @@ export default {
         landmark,
         bedrooms,
         balconies,
-        furnishingStatus, 
+        furnishingStatus,
         powerBackup,
-        roadAccessibility, 
+        roadAccessibility,
         locationAdvantages: locationAdvantages || [],
         amenities: amenities || [],
         ...(mediaUrls.length > 0 && { mediaUrls }),
       };
-  
+
       // Step 3: Update the property in the database
-      const updatedProperty = await updatePropertyInDB(propertyId, vendorId, updatedPropertyData);
-  
+      const updatedProperty = await updatePropertyInDB(
+        propertyId,
+        vendorId,
+        updatedPropertyData
+      );
+
       // Check if updatePropertyInDB returned null
       if (!updatedProperty) {
         throw new Error("Property not found or does not belong to this vendor");
       }
-  
+
       // Step 4: Create and return the PropertyDataResponse object
       const propertyResponse: PropertyDataResponse = {
         propertyType: updatedProperty.propertyType,
@@ -565,7 +571,7 @@ export default {
         amenities: updatedProperty.amenities,
         createdAt: updatedProperty.createdAt,
       };
-  
+
       console.log("Property updated successfully:", updatedProperty);
       return propertyResponse;
     } catch (error: any) {
@@ -573,7 +579,6 @@ export default {
       throw new Error("Error updating property: " + error.message);
     }
   },
-
 
   getPropertyById: async (propertyId: string) => {
     try {
@@ -586,7 +591,7 @@ export default {
     }
   },
 
-  updateBookingStatusAccept : async (bookingId : string) => {
+  updateBookingStatusAccept: async (bookingId: string) => {
     try {
       return await acceptBookingStatus(bookingId);
     } catch (error) {
@@ -604,7 +609,7 @@ export default {
     }
   },
 
-  getChatHistory: async (chatId : string) => {
+  getChatHistory: async (chatId: string) => {
     try {
       const chatHistory = await fetchChatHistory(chatId);
       return chatHistory;
@@ -614,33 +619,106 @@ export default {
     }
   },
 
-  getChatList: async (vendorId : string) => {
+  getChatList: async (vendorId: string) => {
     try {
       return await fetchChatList(vendorId);
     } catch (error) {
-      console.error('Error in fetching chat list from interactor:', error);
-      throw new Error('Failed to get chat list');
+      console.error("Error in fetching chat list from interactor:", error);
+      throw new Error("Failed to get chat list");
     }
   },
-
 
   sendMessage: async (
     chatId: string,
     senderId: string,
     message: string,
     recipientId: string,
-    senderModel: 'User' | 'Vendor',  
-    recipientModel: 'User' | 'Vendor' 
+    senderModel: "User" | "Vendor",
+    recipientModel: "User" | "Vendor"
   ) => {
     try {
-      const messageSent = await sendMessage(chatId, senderId, message, recipientId, senderModel, recipientModel);
+      const messageSent = await sendMessage(
+        chatId,
+        senderId,
+        message,
+        recipientId,
+        senderModel,
+        recipientModel
+      );
       return messageSent;
     } catch (error) {
-      console.error('Error in sending message through interactor:', error);
-      throw new Error('Failed to send message');
+      console.error("Error in sending message through interactor:", error);
+      throw new Error("Failed to send message");
     }
-  }
+  },
 
+  vendorSubscription: async (vendorId: string) => {
+    try {
+      const subscription = await getVendorSubscription(vendorId);
+      if (!subscription) {
+        return null;
+      }
 
+      return {
+        maxListings: subscription.maxListings,
+        listingsUsed: subscription.listingsUsed,
+      };
+    } catch (error) {
+      console.error("Error in vendorSubscription interactor:", error);
+      throw error;
+    }
+  },
 
+  listedSubscriptionPlans: async () => {
+    try {
+      // Query the database for plans where status is true (listed)
+      const listedPlans = await listedSubscriptionPlans();
+      return listedPlans;
+    } catch (error) {
+      throw new Error("Failed to fetch listed subscription plans");
+    }
+  },
+
+  addVendorToSubscription: async (
+    sessionId: string,
+    subscriptionId: string,
+    vendorId: string
+  ) => {
+    try {
+      // Call the repository to add the vendor to the subscription
+      const updateResult = await addVendorToSubscription(
+        sessionId,
+        subscriptionId,
+        vendorId
+      );
+
+      // If the result indicates a successful save
+      if (updateResult.success) {
+        return { success: true, message: updateResult.message };
+      } else {
+        return {
+          success: false,
+          message: updateResult.message || "Could not add vendor",
+        };
+      }
+    } catch (error) {
+      console.error("Interactor Error:", error);
+      return {
+        success: false,
+        message: "Interactor error while adding vendor to subscription",
+      };
+    }
+  },
+
+  listSubscribedPlan: async (vendorId: string) => {
+    try {
+      return await fetchSubscribedPlan(vendorId);
+    } catch (error) {
+      console.error(
+        "Error in interactor while fetching subscribed plan:",
+        error
+      );
+      throw error;
+    }
+  },
 };

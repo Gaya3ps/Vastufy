@@ -53,6 +53,17 @@ vendorRouter.put("/reject-booking/:bookingId",vendorController.rejectBooking);
 vendorRouter.get("/chats/:chatId",vendorController.fetchChatHistory);
 vendorRouter.get("/chatList/:vendorId",vendorController.fetchChatList);
 vendorRouter.post("/chats/:chatId/send",vendorController.sendMessage);
+vendorRouter.get("/getVendorSubscription/:vendorId",vendorController.getVendorSubscription);
+vendorRouter.get("/listed-subscription-plans",vendorController.getListedSubscriptionPlans);
+vendorRouter.post("/create-stripe-session",vendorController.buySubscription);
+vendorRouter.post('/add-vendor-to-subscription', vendorController.addVendorToSubscription);
+vendorRouter.get('/subscribed-plan/:vendorId', vendorController.subscribedPlan);
+
+
+
+
+
+
 
 
 

@@ -1,5 +1,3 @@
-import { log } from "console";
-
 const jwt = require ('jsonwebtoken')
 const SECRET_KEY = "YOUR_SECRET_KEY"; 
 const REFRESH_SECRET_KEY = "REFRESH_SECRET_KEY"

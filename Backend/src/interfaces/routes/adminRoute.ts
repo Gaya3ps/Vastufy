@@ -85,5 +85,11 @@ adminRouter.get(
   adminController.getSubscriptionPlans
 );
 
+adminRouter.put(
+  "/subscriptionplans/status",
+  protectAdmin,
+  adminController.toggleStatus
+);
+
 
 export default adminRouter;

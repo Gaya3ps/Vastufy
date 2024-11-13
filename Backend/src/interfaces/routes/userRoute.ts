@@ -9,6 +9,7 @@ const userRouter = Router();
 userRouter.post('/signup',userController.userRegistration);
 userRouter.post('/otp-verification', userController.verifyOTP);
 userRouter.post('/resend-otp',userController.resendOTP)
+userRouter.get('/getStatus',protectUser,userController.getStatus);
 userRouter.post('/login',userController.userLogin);
 userRouter.post('/googleAuth',userController.googleAuth);
 userRouter.post('/forgot-password',userController.forgotPassword);
@@ -23,6 +24,7 @@ userRouter.post('/chat/initiate',protectUser,userController.initiateChat);
 userRouter.get('/chat/:chatId',userController.getChats);
 userRouter.post('/chat/:chatId/send',protectUser,userController.sendMessage);
 userRouter.get('/chatList/:userId',protectUser,userController.getChatList);
+userRouter.post('/refreshtoken',userController.refreshToken);
 
 
 

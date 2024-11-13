@@ -182,12 +182,10 @@ export default {
           return res.status(409).json({ message: error.message });
         }
 
-        return res
-          .status(500)
-          .json({
-            message: "Failed to create booking",
-            details: error.message,
-          });
+        return res.status(500).json({
+          message: "Failed to create booking",
+          details: error.message,
+        });
       }
 
       // Fallback in case error is not of type Error
@@ -211,8 +209,6 @@ export default {
 
   getBookingDetails: async (req: Request, res: Response) => {
     const { userId } = req.query;
-    console.log(userId, "got user iddddd");
-
     try {
       // Fetch bookings with populated references
       const bookings = await userInteractor.fetchBookings(userId as string);
@@ -224,12 +220,7 @@ export default {
   },
 
   initiateChat: async (req: Request, res: Response) => {
-    console.log(req.body, "here is req.bodyyyyyyyyyy");
-
     const { userId, vendorId } = req.body; // Get user ID from protected route
-    console.log(userId, "hereeeeeeee is userId from controller");
-    console.log(vendorId, "hereeeeee is vendorId from controller");
-
     try {
       const chat = await userInteractor.initiateChatSession(userId, vendorId);
       res.status(200).json({ chatId: chat._id });
@@ -278,15 +269,53 @@ export default {
   },
 
   getChatList: async (req: Request, res: Response) => {
-    const {userId}  = req.params;
-    console.log("Fetching chat list for user ID:",userId);
-
+    const { userId } = req.params;
     try {
       const chatList = await userInteractor.getChatLists(userId);
       res.status(200).json(chatList);
     } catch (error) {
       console.error("Error fetching chat list:", error);
       res.status(500).json({ message: "Failed to fetch chat list" });
+    }
+  },
+  refreshToken: async (req: Request, res: Response) => {
+    try {
+      const refreshToken = req.cookies.refreshToken;
+
+      if (!refreshToken) {
+        return res.status(401).json({ message: "Refresh token not provided" });
+      }
+
+      const decoded = jwt.verify(
+        refreshToken,
+        process.env.REFRESH_SECRET_KEY!
+      ) as { user: string; email: string; role: string };
+      const user = await getUserbyEMail(decoded.email);
+      const { token: newAccessToken, refreshToken: newRefreshToken } =
+        generateToken(user?.id, decoded.email, "user");
+      res.cookie("refreshToken", newRefreshToken, {
+        httpOnly: true,
+        secure: true,
+        sameSite: "strict",
+      });
+      res.json({ accessToken: newAccessToken });
+    } catch (error) {
+      res.status(500).json({ error: (error as Error).message });
+    }
+  },
+
+  getStatus: async (req: Request, res: Response) => {
+    try {
+      if (req.user) {
+        res
+          .status(200)
+          .json({ message: "User is authenticated", user: req.user });
+      } else {
+        res.status(401).json({ message: "User is not authenticated" });
+      }
+    } catch (error) {
+      console.error("Unexpected error in resendOTP:", error);
+      res.status(500).json({ error: "Failed to get user status" });
     }
   },
 };

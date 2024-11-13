@@ -1,4 +1,3 @@
-import { hash } from "crypto";
 import {
   IVendor,
   UpdateVendorData,
@@ -9,7 +8,7 @@ import { LicenseDataResponse } from "../../domain/entities/types/licenceType";
 import { log } from "console";
 import { Category } from "../database/dbModel/categoryModel";
 import { Subcategory } from "../database/dbModel/subCategoryModel";
-import { Property, PropertyModel } from "../database/dbModel/propertyModel";
+import { PropertyModel } from "../database/dbModel/propertyModel";
 import {
   PropertyDataRequest,
   PropertyDataResponse,
@@ -17,6 +16,8 @@ import {
 import { BookingModel } from "../database/dbModel/bookingModel";
 import ChatModel from "../database/dbModel/chatModel";
 import MessageModel from "../database/dbModel/messageModel";
+import { SubscriptionPlanModel } from "../database/dbModel/subscriptionPlanModel";
+import { VendorSubscription } from "../database/dbModel/vendorSubscription";
 
 export const createVendor = async (
   vendorData: IVendor,
@@ -168,7 +169,8 @@ export const saveProperty = async (propertyData: any, vendorId: string) => {
     const savedProperty = await newProperty.save();
 
     await Vendor.findByIdAndUpdate(vendorId, {
-      $push: { properties: savedProperty._id }, // Add property to vendor's properties array
+      $push: { properties: savedProperty._id },
+      $inc: { listingsUsed: 1 }, // Add property to vendor's properties array
     });
 
     return savedProperty;
@@ -179,14 +181,13 @@ export const saveProperty = async (propertyData: any, vendorId: string) => {
 };
 export const listProperty = async (vendorId: string) => {
   try {
-    const vendor = await Vendor.findById(vendorId)
-      .populate({
-        path: "properties",
-        populate: {
-          path: "category", // Populate the category field
-          model: "Category", // Assuming Category is the name of the category model
-        },
-      });
+    const vendor = await Vendor.findById(vendorId).populate({
+      path: "properties",
+      populate: {
+        path: "category", // Populate the category field
+        model: "Category", // Assuming Category is the name of the category model
+      },
+    });
     return vendor;
   } catch (error: any) {
     throw new Error(error.message);
@@ -209,14 +210,15 @@ export const getAllProperties = async () => {
   ).populate("category", "name");
 };
 
-
 export const listBookings = async (vendorId: string) => {
   try {
     // Find bookings by vendorId
-    return await BookingModel.find({ vendorId }).populate('propertyId userId vendorId'); // Populating related fields if needed
+    return await BookingModel.find({ vendorId }).populate(
+      "propertyId userId vendorId"
+    ); // Populating related fields if needed
   } catch (error) {
-    console.error('Error fetching bookings from database:', error);
-    throw new Error('Database error while fetching bookings');
+    console.error("Error fetching bookings from database:", error);
+    throw new Error("Database error while fetching bookings");
   }
 };
 
@@ -241,7 +243,7 @@ export const updatePropertyInDB = async (
     return {
       ...updatedProperty,
       saletype: updatedProperty.saleType ?? "", // Convert or set defaults as needed
-      ageofproperty: updatedProperty.ageOfProperty ?? ""
+      ageofproperty: updatedProperty.ageOfProperty ?? "",
     } as PropertyDataResponse;
   } catch (error: any) {
     console.error("Error updating property:", error);
@@ -267,7 +269,7 @@ export const getPropertyByIdFromDB = async (propertyId: string) => {
   }
 };
 
-export const acceptBookingStatus = async (bookingId : string) => {
+export const acceptBookingStatus = async (bookingId: string) => {
   try {
     return await BookingModel.findByIdAndUpdate(
       bookingId,
@@ -281,10 +283,14 @@ export const acceptBookingStatus = async (bookingId : string) => {
 };
 
 export const rejectBookingStatus = async (bookingId: string) => {
-  return await BookingModel.findByIdAndUpdate(bookingId, { status: "rejected" }, { new: true });
+  return await BookingModel.findByIdAndUpdate(
+    bookingId,
+    { status: "rejected" },
+    { new: true }
+  );
 };
 
-export const fetchChatHistory = async (chatId : string) => {
+export const fetchChatHistory = async (chatId: string) => {
   try {
     const messages = await MessageModel.find({ chatId })
       .sort({ timestamp: 1 }) // Sort by timestamp to display messages in chronological order
@@ -295,24 +301,23 @@ export const fetchChatHistory = async (chatId : string) => {
     console.error("Error fetching chat history from database:", error);
     throw new Error("Failed to fetch chat history");
   }
-}
+};
 
-
-export const fetchChatList = async (vendorId :string ) => {
+export const fetchChatList = async (vendorId: string) => {
   try {
-    const chatList = await ChatModel.find({ "users": vendorId })
+    const chatList = await ChatModel.find({ users: vendorId })
       .populate({
-        path: 'users',
+        path: "users",
         match: { _id: { $ne: vendorId } }, // Exclude vendor from the populated users
-        select: 'name avatar' // Only include necessary fields
+        select: "name avatar", // Only include necessary fields
       })
-      .populate('latestMessage', 'message timestamp')
+      .populate("latestMessage", "message timestamp")
       .exec();
 
     return chatList;
   } catch (error) {
-    console.error('Error fetching chat list from database:', error);
-    throw new Error('Failed to fetch chat list');
+    console.error("Error fetching chat list from database:", error);
+    throw new Error("Failed to fetch chat list");
   }
 };
 
@@ -321,10 +326,9 @@ export const sendMessage = async (
   senderId: string,
   message: string,
   recipientId: string,
-  senderModel: 'User' | 'Vendor',
-  recipientModel: 'User' | 'Vendor'
+  senderModel: "User" | "Vendor",
+  recipientModel: "User" | "Vendor"
 ) => {
-
   try {
     // Create a new message document
     const newMessage = await MessageModel.create({
@@ -340,7 +344,113 @@ export const sendMessage = async (
     console.log("Message saved to database:", newMessage);
     return newMessage;
   } catch (error) {
-    console.error('Error saving message to database:', error);
+    console.error("Error saving message to database:", error);
+    throw error;
+  }
+};
+
+export const getVendorSubscription = async (vendorId: string) => {
+  try {
+    // Fetch all subscriptions associated with the vendor and populate each subscription's details
+    const vendorSubscriptions = await VendorSubscription.find({
+      vendor: vendorId,
+    }).populate<{ subscription: { maxListings: number } }>("subscription");
+
+    // Fetch vendor data regardless of subscription status
+    const vendor = await Vendor.findById(vendorId).select(
+      "maxListings listingsUsed"
+    );
+
+    if (!vendor) {
+      return null;
+    }
+
+    // Initialize the maxListings with the vendor's base maxListings
+    let maxListings = vendor.maxListings;
+    const listingsUsed = vendor.listingsUsed;
+
+    // Sum up maxListings from all the vendor's subscriptions if they exist
+    vendorSubscriptions.forEach((vendorSubscription) => {
+      if (vendorSubscription.subscription) {
+        maxListings += vendorSubscription.subscription.maxListings;
+      }
+    });
+
+    return {
+      maxListings,
+      listingsUsed,
+    };
+  } catch (error) {
+    console.error("Error in getVendorSubscription:", error);
+    throw error;
+  }
+};
+
+export const listedSubscriptionPlans = async () => {
+  try {
+    // Query the database for subscription plans with status set to true
+    const listedPlans = await SubscriptionPlanModel.find({ status: true });
+    return listedPlans;
+  } catch (error) {
+    throw new Error(
+      "Failed to fetch listed subscription plans from the database"
+    );
+  }
+};
+
+export const addVendorToSubscription = async (
+  sessionId: string,
+  subscriptionId: string,
+  vendorId: string
+) => {
+  try {
+    // Check if the vendor already has a subscription to avoid duplicates
+    const existingSubscription = await VendorSubscription.findOne({
+      vendor: vendorId,
+      subscription: subscriptionId,
+    });
+
+    if (existingSubscription) {
+      console.log("Vendor already subscribed to this plan.");
+      return {
+        success: false,
+        message: "Vendor already subscribed to this plan.",
+      };
+    }
+
+    // Create a new VendorSubscription document
+    const newVendorSubscription = new VendorSubscription({
+      vendor: vendorId,
+      subscription: subscriptionId,
+      purchaseDate: new Date(),
+      stripeSessionId: sessionId,
+    });
+
+    // Save the new subscription
+    await newVendorSubscription.save();
+    return { success: true, message: "Subscription added successfully" };
+  } catch (error) {
+    console.error("Repository Error:", error);
+    return { success: false, message: "Error saving subscription to database" };
+  }
+};
+
+export const fetchSubscribedPlan = async (vendorId: string) => {
+  try {
+    // Find the subscription linked to the vendor, then populate the subscription details
+    const subscribedPlan = await VendorSubscription.findOne({
+      vendor: vendorId,
+    })
+      .populate({
+        path: "subscription",
+        model: SubscriptionPlanModel,
+        select: "planName price features maxListings prioritySupport", // Only select needed fields
+      })
+      .exec();
+
+    return subscribedPlan;
+  } catch (error) {
+    console.error("Error fetching subscribed plan from database:", error);
     throw error;
   }
 };
