@@ -2,7 +2,11 @@ import { Request, Response, NextFunction } from "express";
 import userInteractor from "../../domain/usecases/auth/userInteractor";
 import mongoose from "mongoose";
 import jwt from "jsonwebtoken";
-import { getUserbyEMail } from "../../infrastructure/repositories/mongoUserRepository";
+import {
+  getUserbyEMail,
+  getUsersCount,
+  PropertyQueryParams,
+} from "../../infrastructure/repositories/mongoUserRepository";
 
 import { generateToken } from "../../domain/helper/jwtHelper";
 import { Users } from "../../infrastructure/database/dbModel/userModel";
@@ -12,6 +16,8 @@ export default {
   userRegistration: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await userInteractor.registerUser(req.body);
+      console.log(user, "goottttttttttt");
+
       res.status(200).json({ message: "registration success", user });
     } catch (error: any) {
       console.log(error);
@@ -108,7 +114,7 @@ export default {
   },
 
   updateUser: async (req: Request, res: Response) => {
-    const { name } = req.body;
+    const { name, mobileNumber } = req.body;
     const { userId } = req.params;
     try {
       const user = await Users.findById(userId);
@@ -118,6 +124,7 @@ export default {
       }
 
       user.name = name || user.name;
+      user.mobileNumber = mobileNumber || user.mobileNumber;
       const updatedUser = await user.save();
       res.status(200).json(updatedUser);
     } catch (error) {
@@ -318,4 +325,39 @@ export default {
       res.status(500).json({ error: "Failed to get user status" });
     }
   },
+
+  getAllBookings: async (req: Request, res: Response) => {
+    try {
+      const bookings = await userInteractor.getBookings();
+      res.status(200).json(bookings);
+    } catch (error) {
+      console.error("Error in getAllBookings controller:", error);
+      res.status(500).json({ error: "Failed to fetch booking data" });
+    }
+  },
+
+  getUserCount: async (req: Request, res: Response) => {
+    try {
+      const usersCount = await userInteractor.userCount();
+      res.status(200).json(usersCount);
+    } catch (error) {
+      console.error("Error fetching user count:", error);
+      res.status(500).json({ error: "Failed to fetch user count" });
+    }
+  },
+
+  getPropertyStats: async(req: Request, res: Response) =>{
+    try {
+      // Fetch property statistics from the interactor
+      const propertyStats = await userInteractor.getPropertyStats();
+      
+      // Send the response back to the client
+      res.status(200).json(propertyStats);
+    } catch (error) {
+      console.error("Error fetching property stats:", error);
+      res.status(500).json({ error: 'Failed to fetch property statistics' });
+    }
+  },
+  
+
 };

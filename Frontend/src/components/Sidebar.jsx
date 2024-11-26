@@ -40,7 +40,7 @@ function Sidebar() {
   };
 
   return (
-    <div className="w-64 bg-[#155e75] shadow-lg h-auto">
+    <div className="fixed top-0 left-0 w-64 h-full bg-[#155e75] shadow-lg z-10 overflow-y-auto">
       {/* Updated background color */}
       <div className="p-6 flex items-center justify-center">
         <img src={logo} alt="Logo" className="h-16 w-auto" /> {/* Added logo */}

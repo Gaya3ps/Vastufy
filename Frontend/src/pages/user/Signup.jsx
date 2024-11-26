@@ -40,7 +40,7 @@ const handleGoogleSignup = async () => {
                   if (userId) {
                       console.log('Signup successful. User ID:', userId);
                       toast.success('User signed up with Google');
-                      navigate('/home');
+                      navigate('/');
                   } else {
                       console.error('User ID is undefined:', response.payload.user);
                       toast.error('Google signup failed');

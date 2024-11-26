@@ -1,68 +1,75 @@
-import React, { useEffect, useState } from 'react';
-import Header from '../../components/Header'; // Import Header component
-import SearchSidebar from '../../components/SearchSidebar'; // Import Search Sidebar component
-import PropertyCard from '../../components/PropertyCard'; // Import PropertyCard component
-import axiosInstanceUser from '../../services/axiosInstanceUser'; // Import axios instance for API calls
+import React, { useEffect, useState } from "react";
+import Header from "../../components/Header";
+import PropertyCard from "../../components/PropertyCard";
+import SearchSortFilter from "../../components/SearchSortFilter";
+import axiosInstanceUser from "../../services/axiosInstanceUser";
 
 function Properties() {
   const [properties, setProperties] = useState([]);
+  const [filteredProperties, setFilteredProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [showHeader, setShowHeader] = useState(true); // State to control header visibility
-  const [lastScrollY, setLastScrollY] = useState(0); // State to track last scroll position
+  const [showHeader, setShowHeader] = useState(true);
+  const [lastScrollY, setLastScrollY] = useState(0);
 
-  // Fetch properties from the backend
+  // Define search, sort, and filter options
+  const searchFields = ["title", "location", "description"];
+
+
+
   const fetchProperties = async () => {
     try {
-      const response = await axiosInstanceUser.get('/properties'); // Fetch properties
-      setProperties(response.data.properties); // Assuming 'properties' is an array
-      setLoading(false); // Set loading to false after data is fetched
+      const response = await axiosInstanceUser.get("/properties");
+      setProperties(response.data.properties);
+      setFilteredProperties(response.data.properties);
+      setLoading(false);
     } catch (error) {
-      setError('Error fetching properties');
+      setError("Error fetching properties");
       setLoading(false);
     }
   };
 
   useEffect(() => {
-    fetchProperties(); // Call the fetch function when the component mounts
+    fetchProperties();
   }, []);
 
-  // Handle scroll event to show/hide header
   const handleScroll = () => {
     if (window.scrollY > lastScrollY) {
-      // If scrolling down, hide the header
       setShowHeader(false);
     } else {
-      // If scrolling up, show the header
       setShowHeader(true);
     }
     setLastScrollY(window.scrollY);
   };
 
   useEffect(() => {
-    window.addEventListener('scroll', handleScroll); // Add scroll event listener
+    window.addEventListener("scroll", handleScroll);
     return () => {
-      window.removeEventListener('scroll', handleScroll); // Clean up the listener on unmount
+      window.removeEventListener("scroll", handleScroll);
     };
   }, [lastScrollY]);
 
-  // Render the loading state
+  const handleDataChange = (filteredData) => {
+    setFilteredProperties(filteredData);
+  };
+
   if (loading) {
     return (
       <div>
-        <Header /> {/* Add Header */}
+        <Header />
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
-          <p className="text-lg font-semibold text-gray-700">Loading properties...</p>
+          <p className="text-lg font-semibold text-gray-700">
+            Loading properties...
+          </p>
         </div>
       </div>
     );
   }
 
-  // Render error if any
   if (error) {
     return (
       <div>
-        <Header /> {/* Add Header */}
+        <Header />
         <div className="flex justify-center items-center min-h-screen bg-gray-100">
           <p className="text-red-500 text-lg font-semibold">{error}</p>
         </div>
@@ -72,25 +79,35 @@ function Properties() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Header with conditional rendering based on scroll position */}
-      {showHeader && <Header />} {/* Show header based on scroll */}
+      {showHeader && <Header />}
 
-      {/* Add more top margin to create additional space between the header and content */}
-      <div className={`flex flex-grow ${showHeader ? 'mt-28' : 'mt-8'} max-w-7xl mx-auto px-4`}>
-        {/* Sidebar */}
-        <div className="w-64 mr-6">
-          <SearchSidebar />
+      <div className={`max-w-7xl mx-auto px-4 ${showHeader ? "mt-36" : "mt-12"}`}>
+        <h1 className="text-3xl font-bold text-blue-800 mb-8 text-center">
+          Available Properties
+        </h1>
+
+        {/* Centered Search, Sort, and Filter Section */}
+        <div className="mb-8 flex justify-center gap-8 items-center">
+          {/* Existing SearchSortFilter Component */}
+          <SearchSortFilter
+            data={properties}
+            searchFields={searchFields}
+            onDataChange={handleDataChange}
+          />
         </div>
 
-        {/* Main content */}
-        <div className="flex-grow">
-          <h1 className="text-4xl font-bold mb-8 text-gray-800">Available Properties</h1>
-          {properties.length === 0 ? (
-            <p className="text-center text-gray-600">No properties available.</p>
+        {/* Properties Grid */}
+        <div className="mt-8">
+          {filteredProperties.length === 0 ? (
+            <p className="text-center text-gray-600">
+              No properties match your criteria.
+            </p>
           ) : (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {properties.map((property) => (
-                <PropertyCard key={property._id} property={property} />
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+              {filteredProperties.map((property) => (
+                <div className="max-w-full">
+                  <PropertyCard key={property._id} property={property} />
+                </div>
               ))}
             </div>
           )}

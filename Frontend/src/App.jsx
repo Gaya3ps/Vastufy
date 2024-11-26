@@ -13,9 +13,10 @@ function App() {
      <Toaster 
   position="top-center"  // Correct positioning prop
   toastOptions={{
+    duration: 2000,
     style: {
       background: '#fff',   // Custom background color
-      color: '#ff6347',     // Custom text color
+      color: '#16a34a',     // Custom text color
       borderRadius: '8px',  // Custom border radius
       padding: '16px',      // Custom padding
       fontSize: '16px',     // Increase text size

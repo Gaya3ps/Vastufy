@@ -25,6 +25,14 @@ userRouter.get('/chat/:chatId',userController.getChats);
 userRouter.post('/chat/:chatId/send',protectUser,userController.sendMessage);
 userRouter.get('/chatList/:userId',protectUser,userController.getChatList);
 userRouter.post('/refreshtoken',userController.refreshToken);
+userRouter.get('/allbookings',userController.getAllBookings);
+userRouter.get('/userCount',userController.getUserCount);
+userRouter.get('/propertyStats',userController.getPropertyStats);
+
+
+
+
+
 
 
 

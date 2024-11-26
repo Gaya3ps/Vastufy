@@ -20,7 +20,7 @@ const BookingSchema: Schema = new Schema({
   },
   userId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'User', // Reference to the User model
+    ref: 'User', 
     required: true,
   },
   vendorId: {

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useDispatch } from 'react-redux';
 import Sidebar from '../../components/Sidebar';
-import Table from '../../components/Table';
 import { addSubscriptionPlan } from '../../features/admin/adminslice';
 import axiosInstance from '../../services/axiosInstance';
 
@@ -45,28 +44,7 @@ function SubscriptionPlans() {
     }
   };
 
-  // Table data transformation
-  const tableData = subscriptionPlans.map((plan) => ({
-    planName: plan.planName,
-    price: plan.price,
-    maxListings: plan.maxListings,
-    actions: (
-      <div className="flex space-x-2">
-        <button
-          onClick={() => toggleStatus(plan._id, plan.status)}
-          className={`px-3 mr-5 py-1 rounded w-20 ${
-            plan.status ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
-          } text-white`}
-        >
-          {plan.status ? 'Unlist' : 'List'}
-        </button>
-        <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
-          View Details
-        </button>
-      </div>
-    ),
-  }));
-
+  // Handle modal toggling
   const toggleModal = () => {
     setIsModalOpen(!isModalOpen);
   };
@@ -90,7 +68,7 @@ function SubscriptionPlans() {
   };
 
   return (
-    <div className="flex min-h-screen">
+    <div className="flex min-h-screen ml-64">
       <Sidebar />
       <div className="flex-grow p-8">
         <div className="flex justify-between items-center mb-6">
@@ -103,8 +81,52 @@ function SubscriptionPlans() {
           </button>
         </div>
 
-        <Table headers={tableHeaders} data={tableData} />
+        {/* Table Section */}
+        <div className="overflow-x-auto bg-white shadow-lg rounded-lg">
+          <table className="min-w-full table-auto">
+            <thead>
+              <tr className="bg-gradient-to-r from-[#155e75] to-[#083344]">
+                {tableHeaders.map((header, index) => (
+                  <th key={index} className="px-4 py-3 text-left text-white font-semibold text-lg">
+                    {header}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {subscriptionPlans.length === 0 ? (
+                <tr>
+                  <td colSpan="4" className="text-center py-4 text-gray-500">No subscription plans available.</td>
+                </tr>
+              ) : (
+                subscriptionPlans.map((plan) => (
+                  <tr key={plan._id} className="hover:bg-gray-100 transition duration-300">
+                    <td className="px-4 py-3 text-gray-700">{plan.planName}</td>
+                    <td className="px-4 py-3 text-gray-700">₹{plan.price}</td>
+                    <td className="px-4 py-3 text-gray-700">{plan.maxListings}</td>
+                    <td className="px-4 py-3">
+                      <div className="flex space-x-2">
+                        <button
+                          onClick={() => toggleStatus(plan._id, plan.status)}
+                          className={`px-3 py-1 rounded w-20 ${
+                            plan.status ? 'bg-green-500 hover:bg-green-600' : 'bg-red-500 hover:bg-red-600'
+                          } text-white`}
+                        >
+                          {plan.status ? 'Unlist' : 'List'}
+                        </button>
+                        <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                          View Details
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))
+              )}
+            </tbody>
+          </table>
+        </div>
 
+        {/* Add Subscription Modal */}
         {isModalOpen && (
           <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
             <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
@@ -118,7 +140,7 @@ function SubscriptionPlans() {
                     value={formData.planName}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div className="mb-4">
@@ -129,7 +151,7 @@ function SubscriptionPlans() {
                     value={formData.price}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div className="mb-4">
@@ -139,7 +161,7 @@ function SubscriptionPlans() {
                     value={formData.features}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div className="mb-4">
@@ -150,7 +172,7 @@ function SubscriptionPlans() {
                     value={formData.maxListings}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   />
                 </div>
                 <div className="mb-4">
@@ -160,7 +182,7 @@ function SubscriptionPlans() {
                     value={formData.prioritySupport}
                     onChange={handleChange}
                     required
-                    className="w-full px-4 py-2 border rounded-lg"
+                    className="w-full px-4 py-2 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
                   >
                     <option value="">Select Priority Support</option>
                     <option value="yes">Yes</option>

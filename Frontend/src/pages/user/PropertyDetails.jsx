@@ -122,7 +122,7 @@ function PropertyDetails() {
     });
     const chatId = response.data.chatId;
     console.log("Chat initiatedddddd successfully, chat ID:", chatId);
-    navigate(`/chat/${chatId}?vendorId=${property.vendor._id}`);
+    navigate(`/userChat/${chatId}?vendorId=${property.vendor._id}`);
   } catch (error) {
     console.error('Error initiating chat:', error);
     toast.error('Failed to initiate chat. Please try again.');

@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 function PropertyCard({ property }) {
   return (
-    <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-transform transform hover:-translate-y-1 duration-300 w-full max-w-xs">
+    <div className="bg-white shadow-md rounded-lg overflow-hidden hover:shadow-lg transition-transform transform hover:-translate-y-1 duration-300 w-full flex flex-col h-full">
       {/* Property Image */}
       {property.mediaUrls && property.mediaUrls.length > 0 ? (
         <img
@@ -18,11 +18,9 @@ function PropertyCard({ property }) {
       )}
 
       {/* Property Details */}
-      <div className="p-4">
+      <div className="p-4 flex flex-col flex-1">
         {/* Title */}
-        <h2 className="text-lg font-semibold text-gray-800 mb-2 truncate">
-          {property.title}
-        </h2>
+        <h2 className="text-lg font-semibold text-gray-800 mb-2 truncate">{property.title}</h2>
 
         {/* Price */}
         <p className="text-md text-blue-600 font-bold mb-2">
@@ -81,7 +79,7 @@ function PropertyCard({ property }) {
         </div>
 
         {/* View Details Button */}
-        <div className="mt-2">
+        <div className="mt-auto">
           <Link to={`/propertydetails/${property._id}`}>
             <button className="w-full bg-blue-500 text-white py-2 px-4 rounded-lg hover:bg-blue-600 transition duration-300 text-sm">
               View Details
@@ -94,4 +92,3 @@ function PropertyCard({ property }) {
 }
 
 export default PropertyCard;
- 

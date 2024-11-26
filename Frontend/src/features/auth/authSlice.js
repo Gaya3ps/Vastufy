@@ -55,9 +55,9 @@ export const loginUser = createAsyncThunk(
 
 export const updateUser = createAsyncThunk(
   'auth/updateUser',
-  async ({ userId, name }, { rejectWithValue }) => {
+  async ({ userId, name,mobileNumber }, { rejectWithValue }) => {
     try {
-      const response = await axiosInstanceUser.put(`/updateuser/${userId}`, { name });
+      const response = await axiosInstanceUser.put(`/updateuser/${userId}`, { name,mobileNumber  });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

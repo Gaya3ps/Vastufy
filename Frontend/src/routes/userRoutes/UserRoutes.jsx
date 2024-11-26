@@ -15,6 +15,9 @@ import PropertyDetails from "../../pages/user/PropertyDetails";
 import BookingDetails from "../../pages/user/BookingDetails";
 import ChatPage from "../../pages/user/ChatPage";
 import ChatsList from "../../pages/user/ChatsList";
+import UserChat from "../../pages/user/UserChat";
+import AboutUs from "../../pages/user/AboutUs";
+import Services from "../../pages/user/Services";
 
 const UserRoutes = () => {
   return (
@@ -34,6 +37,14 @@ const UserRoutes = () => {
           <Route path ="/bookingdetails" element = {<BookingDetails/>} />
           <Route path ="/chat/:chatId" element ={<ChatPage/>} />
           <Route path ="/chatList" element ={<ChatsList/>} />
+          <Route path ="/userChat/:chatId" element ={<UserChat/>} />
+          <Route path ="/aboutus" element ={<AboutUs/>} />
+          <Route path ="/services" element ={<Services/>} />
+
+
+
+
+
 
         </Route>
       </Routes>

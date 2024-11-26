@@ -18,6 +18,7 @@ import ChatModel from "../database/dbModel/chatModel";
 import MessageModel from "../database/dbModel/messageModel";
 import { SubscriptionPlanModel } from "../database/dbModel/subscriptionPlanModel";
 import { VendorSubscription } from "../database/dbModel/vendorSubscription";
+import moment from "moment";
 
 export const createVendor = async (
   vendorData: IVendor,
@@ -451,6 +452,59 @@ export const fetchSubscribedPlan = async (vendorId: string) => {
     return subscribedPlan;
   } catch (error) {
     console.error("Error fetching subscribed plan from database:", error);
+    throw error;
+  }
+};
+
+export const getVendorCount = async () => {
+  try {
+    return await Vendor.countDocuments(); // Returns only the count of vendors as a number
+  } catch (error) {
+    console.error("Error in getVendorCount:", error);
+    throw error;
+  }
+};
+
+export const getPropertyCountByVendor = async (vendorId: string) => {
+  try {
+    // Count the number of properties that belong to the given vendorId
+    const count = await PropertyModel.countDocuments({ vendor: vendorId });
+    return count; // Return the count of properties
+  } catch (error) {
+    console.error("Error fetching properties:", error);
+    throw error; // Rethrow error to be handled by the controller
+  }
+};
+
+export const getChatCountByVendor = async (vendorId: string) => {
+  try {
+    // Query the database to count the number of chats associated with the vendorId
+    const count = await ChatModel.countDocuments({
+      users: { $in: [vendorId] },
+    });
+    return count; // Return the chat count
+  } catch (error) {
+    console.error("Error fetching chat count:", error);
+    throw error; // Rethrow the error to be handled by the interactor/controller
+  }
+};
+
+export const getSubscriptionRevenue = async () => {
+  try {
+    // Define the date range (last 30 days)
+    const endDate = moment().endOf("day").toDate(); // current date, end of the day
+    const startDate = moment().subtract(30, "days").startOf("day").toDate(); // 30 days ago
+
+    console.log("Start Date:", startDate);
+    console.log("End Date:", endDate);
+
+    const subscriptionRevenueData = await VendorSubscription.find()
+      .populate("subscription", "price") 
+      .exec();
+    console.log("Subscription Revenue Data:", subscriptionRevenueData);
+    return subscriptionRevenueData; // Return the complete data for the chart
+  } catch (error) {
+    console.error("Error fetching subscription revenue:", error);
     throw error;
   }
 };

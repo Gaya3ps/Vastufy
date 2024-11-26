@@ -171,7 +171,7 @@ function Subscriptions() {
 
       {/* Main Content */}
       <div className="flex-1 p-10">
-        <h1 className="text-3xl font-bold text-gray-800 mb-8 text-center">
+        <h1 className="text-3xl font-bold text-[#B85042] mb-8 text-center">
           Subscription Plans
         </h1>
 
@@ -179,7 +179,7 @@ function Subscriptions() {
           {subscriptions.map((plan, index) => (
             <div
               key={index}
-              className="w-full max-w-sm bg-white rounded-lg shadow-lg p-6 text-center border border-gray-300 transform transition-transform duration-300 hover:scale-105"
+              className="w-full max-w-sm bg-white rounded-lg shadow-lg p-6 text-center border border-gray-300 transform transition-transform duration-300 hover:scale-105 h-[500px] flex flex-col"
             >
               <h3 className="text-2xl font-semibold mb-2 text-gray-700">
                 {plan.planName}
@@ -188,16 +188,18 @@ function Subscriptions() {
               <div className="text-sm text-gray-500 mb-4">
                 {plan.platformFee || "0% Platform Fee"}
               </div>
+              <div className="text-center">
               <button
                 onClick={() => handleBuy(plan)}
-                className="bg-blue-500 text-white font-semibold py-2 px-4 rounded-lg mb-6 hover:bg-blue-600 transition-colors duration-200"
+                className="bg-blue-800 text-white font-semibold py-2 px-4 rounded-lg mb-6 hover:bg-blue-600 transition-colors duration-200 w-24 "
               >
                 BUY
               </button>
+              </div>
               <ul className="space-y-3 text-left">
                 {plan.features[0].split("\n").map((feature, i) => (
                   <li key={i} className="flex items-start">
-                    <span className="inline-block w-3 h-3 mr-3 mt-1.5 rounded-full bg-blue-500 flex-shrink-0"></span>
+                    <span className="inline-block w-3 h-3 mr-3 mt-1.5 rounded-full bg-blue-800 flex-shrink-0"></span>
                     <span className="text-gray-700 leading-relaxed">
                       {feature.trim()}
                     </span>

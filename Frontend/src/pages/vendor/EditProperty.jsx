@@ -1485,7 +1485,7 @@ const EditProperty = () => {
   return (
     <div className="min-h-screen flex bg-gray-100">
       <VendorSidebar />
-      <div className="flex-1 p-6">
+      <div className="flex-1 p-6 ml-64">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Edit Property</h1>
           <VendorHeader />
@@ -1496,7 +1496,7 @@ const EditProperty = () => {
               key={header.step}
               className={`py-2 px-4 rounded-lg font-semibold cursor-pointer ${
                 step === header.step
-                  ? "bg-blue-500 text-white"
+                  ? "bg-[#B85042] text-white"
                   : "bg-gray-200 text-gray-600"
               }`}
               onClick={() => setStep(header.step)}

@@ -15,6 +15,7 @@ import Chat from "../../pages/vendor/Chat";
 import Subscriptions from "../../pages/vendor/Subscriptions";
 import SubscriptionSuccess from "../../pages/vendor/SubscriptionSuccess";
 import SubscriptionFailure from "../../pages/vendor/SubscriptionFailure";
+import VendorChat from "../../pages/vendor/VendorChat";
 
 const VendorRoutes = () => {
   return (
@@ -36,6 +37,8 @@ const VendorRoutes = () => {
         <Route path ="/subscriptions" element={<Subscriptions />} /> 
         <Route path = "/subscription-success" element ={<SubscriptionSuccess/>} />
         <Route path = "/subscription-failed" element ={<SubscriptionFailure/>} />
+        <Route path = "/vendorChat" element ={<VendorChat/>} />
+
 
       </Routes>
     </>

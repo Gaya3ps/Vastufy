@@ -1,5 +1,5 @@
 
-import mongoose, { Document, Schema, Types } from "mongoose"; // Import Types for ObjectId
+import mongoose, { Document, Schema, Types } from "mongoose"; 
 
 export interface Service {
   name: string;
@@ -27,7 +27,7 @@ export interface VendorDocument extends Document {
 
 export interface UpdateVendorData {
   name?: string;
-  mobileNumber?: string; 
+  mobileNumber?: string;   
   address?: string;
 }
 
@@ -43,12 +43,15 @@ const vendorSchema = new Schema<VendorDocument>({
   is_verified: { type: Boolean, default: false },
   is_blocked: { type: Boolean, default: false },
   otp_verified: { type: Boolean, default: false },
-  // Add the reference to the License model
   license: { type: Schema.Types.ObjectId, ref: 'License' } ,
   properties: [{ type: Schema.Types.ObjectId, ref: 'Property' }],
   subscriptionPlan: { type: Schema.Types.ObjectId, ref: 'SubscriptionPlan' },
   maxListings: { type: Number, default: 2 }, // Default to free limit (2 listings)
   listingsUsed: { type: Number, default: 0 }
-});
+},
+{
+  timestamps: true 
+}
+);
 
 export const Vendor = mongoose.model<VendorDocument>('Vendor', vendorSchema);

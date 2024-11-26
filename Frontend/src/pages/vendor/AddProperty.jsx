@@ -139,31 +139,8 @@ function AddProperty() {
   const [mediaPreviews, setMediaPreviews] = useState([]);
   const [subscriptionData, setSubscriptionData] = useState(null);
   const [isLimitReached, setIsLimitReached] = useState(false);
-
-  // useEffect(() => {
-  //   const fetchVendorSubscription = async () => {
-  //     try {
-  //       // Fetch the vendor's subscription data on page load
-  //       const response = await axiosInstanceVendor.get(
-  //         `/getVendorSubscription/${vendorId}`
-  //       );
-  //       console.log(response.data, "qwerrtyyyyyyyfgyfrg");
-
-  //       // setSubscriptionData(response.data);
-
-  //       // // Check if the vendor has reached their listing limit
-  //       // if (response.data.listingsUsed >= response.data.maxListings) {
-  //       //   setIsLimitReached(true);
-  //       //   // alert("You have reached your maximum property listings. Please upgrade your plan to add more properties.");
-  //       //   // navigate("/vendor/upgrade"); // Redirect to upgrade page if limit is reached
-  //       // }
-  //     } catch (error) {
-  //       console.error("Error fetching subscription data:", error);
-  //     }
-  //   };
-
-  //   fetchVendorSubscription();
-  // }, [vendorId]);
+  const [loading, setLoading] = useState(false);
+ 
 
   useEffect(() => {
     const fetchVendorSubscription = async () => {
@@ -264,6 +241,8 @@ function AddProperty() {
         formDataToSend.append("media", file);
       });
     }
+    setLoading(true);
+    setIsSuccessModalOpen(true); 
 
     try {
       // Dispatch the form data and vendorId separately
@@ -1546,10 +1525,11 @@ function AddProperty() {
                   </button>
                   <button
                     type="submit"
-                    className="bg-green-500 text-white py-2 px-4 rounded"
-                    disabled={isSubmitting}
+                    className="bg-blue-500 text-white py-2 px-4 rounded"
+                    disabled={loading}
                   >
-                    Submit property
+
+                   {loading ? "Submitting..." : "Submit Property"}
                   </button>
                 </div>
               </Form>
@@ -1572,14 +1552,14 @@ function AddProperty() {
   ];
 
   return (
-    <div className="min-h-screen flex bg-gray-100">
+    <div className="min-h-screen flex ">
       {/* Sidebar */}
-      <div className="w-64 bg-white shadow-md">
+      <div className="w-64 bg-white shadow-md min-h-screen">
         <VendorSidebar />
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-6">
+      <div className="ml-8 p-6 flex-1 bg-gray-100">
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-gray-800">Add Property</h1>
           <VendorHeader />
@@ -1597,7 +1577,7 @@ function AddProperty() {
               key={header.step}
               className={`py-2 px-4 rounded-lg font-semibold cursor-pointer ${
                 step === header.step
-                  ? "bg-blue-500 text-white"
+                  ? "bg-[#B85042] text-white"
                   : "bg-gray-200 text-gray-600"
               }`}
             >

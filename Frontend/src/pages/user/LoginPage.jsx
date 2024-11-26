@@ -50,7 +50,7 @@ const Login = () => {
             if (userId) {
               console.log('Login successful. User ID:', userId);
               toast.success('User logged in with Google');
-              navigate('/home');
+              navigate('/');
             } else {
               console.error('User ID is undefined:', response.payload.user);
               toast.error('Google login failed');

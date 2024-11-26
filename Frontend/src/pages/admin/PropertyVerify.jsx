@@ -39,7 +39,7 @@ function PropertyVerify() {
   };
 
   return (
-    <div className="flex h-screen bg-['#155e75'] overflow-hidden">
+    <div className="flex h-screen bg-['#155e75'] overflow-hidden ml-64">
       <Sidebar />
       <div className="flex-1 p-6 overflow-y-auto">
         <div className="flex items-center justify-between mb-4">

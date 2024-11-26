@@ -55,7 +55,7 @@ function PropertyDetail() {
   if (error) return <div>{error}</div>;
 
   return (
-    <div className="flex h-screen bg-gray-100">
+    <div className="flex h-screen bg-gray-100 ml-64">
       <Sidebar />
       <div className="flex-1 p-6">
         {property ? (

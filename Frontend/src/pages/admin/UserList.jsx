@@ -3,6 +3,7 @@ import Sidebar from '../../components/Sidebar';
 import axiosInstance from '../../services/axiosInstance';
 import Switch from 'react-switch';
 import Modal from 'react-modal';
+import { FaSearch } from 'react-icons/fa';
 
 function UserList() {
   const [users, setUsers] = useState([]);
@@ -91,66 +92,54 @@ function UserList() {
   };
 
   return (
-    <div className="flex h-screen bg-['#155e75']">
+    <div className="flex h-screen bg-[#eef2ff] ml-64">
       <Sidebar />
 
       <div className="flex-1 p-6">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center bg-white rounded shadow-md">
+        <h1 className="text-3xl font-semibold mb-6 text-[#2D2926FF]">User List</h1>
+
+        <div className="flex justify-between mb-4">
+          <div className="flex items-center bg-white rounded-lg shadow-md p-2">
             <input
               type="text"
               placeholder="Search users"
-              className="px-4 py-2 w-64 border-none focus:outline-none"
+             className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#155e75] text-lg"
               value={searchTerm}
               onChange={handleSearchChange}
             />
-            <button className="px-4 py-2 bg-gray-200 border-l border-gray-300">
-              <svg className="w-5 h-5 text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-4.35-4.35M9 14a5 5 0 1 1 10 0 5 5 0 0 1-10 0zm0 0v1a1 1 0 0 0 1 1h3m-4-6h4" />
-              </svg>
-            </button>
+<button className="ml-2 p-2 rounded-lg bg-[#155e75] text-white">
+          <FaSearch className="w-5 h-5 text-white" />
+          </button>
           </div>
           <select
-            className="px-4 py-2 bg-gray-200 rounded shadow-md"
+            className="px-4 py-2 bg-gray-200 rounded-lg shadow-md"
             value={statusFilter}
             onChange={handleStatusFilterChange}
           >
-            <option value="">Status</option>
+            <option value="">All Status</option>
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </select>
         </div>
 
-        <div className="bg-white dark:bg-gray-700 shadow-lg rounded-lg overflow-hidden">
-          <table className="min-w-full leading-normal">
-            <thead>
+        <div className="bg-white shadow-lg rounded-lg overflow-hidden">
+          <table className="min-w-full table-auto">
+            <thead className="bg-gradient-to-r from-[#155e75] to-[#083344] text-white text-left">
               <tr>
-                <th className="px-5 py-3 bg-[#155e75] text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase tracking-wider">
-                  Name
-                </th>
-                <th className="px-5 py-3 bg-[#155e75] text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase tracking-wider">
-                  Email
-                </th>
-                <th className="px-5 py-3 bg-[#155e75] text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-5 py-3 bg-[#155e75] text-left text-xs font-semibold text-gray-600 dark:text-gray-200 uppercase tracking-wider">
-                  Actions
-                </th>
+                <th className="px-6 py-4 text-sm font-semibold">Name</th>
+                <th className="px-6 py-4 text-sm font-semibold">Email</th>
+                <th className="px-6 py-4 text-sm font-semibold">Status</th>
+                <th className="px-6 py-4 text-sm font-semibold">Actions</th>
               </tr>
             </thead>
             <tbody>
               {status === 'loading' ? (
                 <tr>
-                  <td colSpan="4" className="text-center p-5">
-                    Loading...
-                  </td>
+                  <td colSpan="4" className="text-center p-5">Loading...</td>
                 </tr>
               ) : status === 'failed' ? (
                 <tr>
-                  <td colSpan="4" className="text-center p-5 text-red-500">
-                    {error}
-                  </td>
+                  <td colSpan="4" className="text-center p-5 text-red-500">{error}</td>
                 </tr>
               ) : Array.isArray(users) && users.length > 0 ? (
                 users.map((user) => {
@@ -164,35 +153,25 @@ function UserList() {
                   const isBlocked = blockedStatus[user._id];
 
                   return (
-                    <tr key={user._id}>
-                      <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-600 bg-white  text-sm">
-                        <div className="flex items-center">
-                          <div className="ml-3">
-                            <p className="whitespace-no-wrap" style={{ color: '#155e75' }}>{user.name}</p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-600 bg-white text-sm">
-                        <p className="whitespace-no-wrap" style={{ color: '#155e75' }}>{user.email}</p>
-                      </td>
-                      <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-600 bg-white  text-sm">
-                        <span className={`relative inline-block px-3 py-1 font-semibold leading-tight ${!isBlocked ? 'text-green-900' : 'text-red-900'}`}>
-                          <span aria-hidden className={`absolute inset-0 opacity-50 rounded-full ${!isBlocked ? 'bg-[#A39F74] dark:bg-[#A39F74]' : 'bg-red-200 dark:bg-red-600'}`}></span>
-                          <span className="relative">{!isBlocked ? 'Active' : 'Blocked'}</span>
+                    <tr key={user._id} className="hover:bg-gray-100">
+                      <td className="px-6 py-4 border-b border-gray-200 text-black text-sm">{user.name}</td>
+                      <td className="px-6 py-4 border-b border-gray-200 text-black text-sm">{user.email}</td>
+                      <td className="px-6 py-4 border-b border-gray-200 text-black text-sm">
+                        <span className={`inline-block px-3 py-1 text-sm ${!isBlocked ? 'bg-green-500' : 'bg-red-500'} text-white rounded-full`}>
+                          {!isBlocked ? 'Active' : 'Blocked'}
                         </span>
                       </td>
-                      <td className="px-5 py-5 border-b border-gray-200 dark:border-gray-600 bg-white  text-sm">
+                      <td className="px-6 py-4 border-b border-gray-200 text-black text-sm">
                         <Switch
-                         
                           onChange={() => openConfirmModal(user)}
-                      checked={isBlocked}
-                      onColor="#EF4444"
-                      offColor="#4CAF50"
-                      uncheckedIcon={false}
-                      checkedIcon={false}
-                      height={20}
-                      width={40}
-                      borderRadius={10}
+                          checked={isBlocked}
+                          onColor="#EF4444"
+                          offColor="#4CAF50"
+                          uncheckedIcon={false}
+                          checkedIcon={false}
+                          height={20}
+                          width={40}
+                          borderRadius={10}
                         />
                       </td>
                     </tr>
@@ -200,9 +179,7 @@ function UserList() {
                 })
               ) : (
                 <tr>
-                  <td colSpan="4" className="text-center p-5">
-                    No users found.
-                  </td>
+                  <td colSpan="4" className="text-center p-5">No users found.</td>
                 </tr>
               )}
             </tbody>

@@ -18,6 +18,9 @@ import {
   fetchChats,
   addMessageToChat,
   getChats,
+  getAllBookings,
+  getUsersCount,
+  getPropertyStats,
 } from "../../../infrastructure/repositories/mongoUserRepository";
 import { Encrypt } from "../../helper/hashPassword";
 import {
@@ -35,9 +38,9 @@ function createError(message: string, status: number) {
   return error;
 }
 
+
 export default {
   registerUser: async (userData: IUser) => {
-    console.log("userdata usecase", userData);
 
     try {
       if (!userData.email || !userData.name) {
@@ -340,9 +343,53 @@ export default {
       console.error('Error in fetching chat list from interactor:', error);
       throw new Error('Failed to fetch chat list');
     }
-  }
+  },
+
+
+  getBookings: async (): Promise<{ date: string; count: number }[]> => {
+    try {
+      const bookings = await getAllBookings();
+  
+      // Define `acc` with an explicit type for TypeScript compatibility
+      const bookingCounts: Record<string, number> = bookings.reduce((acc, booking) => {
+        const date = booking.visitDate.toISOString().split('T')[0]; // Format date as YYYY-MM-DD
+        acc[date] = (acc[date] || 0) + 1; // Increment count for each date
+        return acc;
+      }, {} as Record<string, number>);
+  
+      // Transform the booking counts to an array of objects for easier chart handling
+      const formattedData = Object.keys(bookingCounts).map(date => ({
+        date,
+        count: bookingCounts[date]
+      }));
+  
+      return formattedData;
+    } catch (error) {
+      console.error("Error in getBookings interactor:", error);
+      throw error;
+    }
+  },
   
 
+  userCount: async()=>{
+    try {
+      const allUsersCount = await getUsersCount();
+      return allUsersCount;
+    } catch (error) {
+      console.error("Error in getUsers interactor:", error);
+      throw error;
+    }
+  },
 
 
-};
+  getPropertyStats: async()=>{
+    try {
+      const propertyStats = await getPropertyStats(); 
+      return propertyStats;
+    } catch (error) {
+       console.error("Error in interactor while fetching property stats:", error);
+    throw error;
+    }
+  }
+
+}

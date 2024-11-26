@@ -777,4 +777,54 @@ export default {
       res.status(500).json({ error: "Failed to fetch subscribed plan" });
     }
   },
+
+  getVendorCount: async (req: Request, res: Response) => {
+    try {
+      const count = await vendorInteractor.vendorCount();
+      res.status(200).json({ count }); // Returns { count: <number> }
+    } catch (error) {
+      console.error("Error fetching vendor count:", error);
+      res.status(500).json({ error: "Failed to fetch vendor count" });
+    }
+  },
+
+  getPropertyCount: async (req: Request, res: Response) => {
+    try {
+      const { vendorId } = req.params;  
+      console.log(req.params,"huhmmmmm");
+      
+      const count = await vendorInteractor.propertyCount(vendorId);  // Pass vendorId to the interactor
+      res.json({ count });
+    } catch (error) {
+      console.error("Error fetching property count:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+
+
+  getChatCount: async (req: Request, res: Response) => {
+    try {
+      const { vendorId } = req.params;  // Get vendorId from the URL path
+      console.log(req.params, "Fetching chat count for vendor");
+
+      // Pass the vendorId to the interactor to get the count
+      const count = await vendorInteractor.chatCount(vendorId);
+      res.json({ count });
+    } catch (error) {
+      console.error("Error fetching chat count:", error);
+      res.status(500).json({ error: "Internal Server Error" });
+    }
+  },
+
+  getSubscriptionRevenue: async (req: Request, res: Response) => {
+    try {
+      const revenueData = await vendorInteractor.subscriptionRevenue();
+      res.status(200).json(revenueData); // Send the data as JSON response
+    } catch (error) {
+      console.error("Error fetching subscription revenue:", error);
+      res.status(500).json({ error: "Failed to fetch subscription revenue data" });
+    }
+  }
+
+
 };

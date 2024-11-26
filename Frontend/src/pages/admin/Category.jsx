@@ -211,7 +211,7 @@ function Category() {
 
 
   return (
-    <div className="flex min-h-screen bg-gray-100">
+    <div className="flex min-h-screen bg-gray-100 ml-64">
       <Sidebar />
       <div className="flex-1 p-8">
         <div className="flex justify-between items-center mb-6">

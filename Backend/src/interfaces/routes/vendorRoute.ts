@@ -58,6 +58,15 @@ vendorRouter.get("/listed-subscription-plans",vendorController.getListedSubscrip
 vendorRouter.post("/create-stripe-session",vendorController.buySubscription);
 vendorRouter.post('/add-vendor-to-subscription', vendorController.addVendorToSubscription);
 vendorRouter.get('/subscribed-plan/:vendorId', vendorController.subscribedPlan);
+vendorRouter.get('/vendorCount', vendorController.getVendorCount);
+vendorRouter.get('/propertyCount/:vendorId', vendorController.getPropertyCount);
+vendorRouter.get('/chatCount/:vendorId', vendorController.getChatCount);
+vendorRouter.get('/subscriptionRevenue', vendorController.getSubscriptionRevenue);
+
+
+
+
+
 
 
 

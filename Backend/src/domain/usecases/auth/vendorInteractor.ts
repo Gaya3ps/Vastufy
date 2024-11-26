@@ -12,7 +12,6 @@ import {
   saveProperty,
   listProperty,
   listBookings,
-  // updatePropertyInDB,
   getPropertyByIdFromDB,
   updatePropertyInDB,
   acceptBookingStatus,
@@ -24,6 +23,10 @@ import {
   listedSubscriptionPlans,
   addVendorToSubscription,
   fetchSubscribedPlan,
+  getVendorCount,
+  getPropertyCountByVendor,
+  getSubscriptionRevenue,
+  getChatCountByVendor,
 } from "../../../infrastructure/repositories/mongoVendorrepository";
 import { log } from "console";
 import { generateOTP } from "../../../utils/otpUtils";
@@ -721,4 +724,46 @@ export default {
       throw error;
     }
   },
+
+  vendorCount : async()=>{
+    try {
+      return await getVendorCount(); // Returns only the count of vendors as a number
+    } catch (error) {
+      console.error("Error in vendorCount interactor:", error);
+      throw error;
+    }
+  },
+
+
+  propertyCount : async(vendorId: string)=>{
+    try {
+      return await getPropertyCountByVendor(vendorId);  // Fetch count from the database
+    } catch (error) {
+      console.error("Error fetching property count:", error);
+      throw error;
+    }
+  },
+
+
+  chatCount: async (vendorId: string) => {
+    try {
+      return await getChatCountByVendor(vendorId);  // Call chat service to get chat count
+    } catch (error) {
+      console.error("Error fetching chat count:", error);
+      throw error;
+    }
+  },
+
+
+  subscriptionRevenue: async () => {
+    try {
+      const revenueData = await getSubscriptionRevenue();
+      return revenueData;
+    } catch (error) {
+      console.error("Error in subscription revenue interactor:", error);
+      throw error;
+    }
+  }
+  
+
 };

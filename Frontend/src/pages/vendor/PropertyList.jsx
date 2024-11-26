@@ -4,6 +4,7 @@ import axiosInstanceVendor from "../../services/axiosInstanceVendor";
 import { useNavigate } from "react-router-dom"; 
 import { useSelector } from "react-redux";
 import { selectVendor } from "../../features/vendor/vendorSlice";
+import { FaBed, FaBath, FaCar } from "react-icons/fa"; // Add icons
 
 function PropertyList() {
   const [properties, setProperties] = useState([]);
@@ -22,9 +23,6 @@ function PropertyList() {
         const response = await axiosInstanceVendor.get(
           `/properties/${vendorId}`
         );
-        console.log(response.data, "Fetched properties");
-
-        // Assuming the 'properties' field is in the response and reverse to show newest first
         setProperties(response.data.properties.properties.reverse());
         setLoading(false);
       } catch (error) {
@@ -33,13 +31,12 @@ function PropertyList() {
       }
     };
     if (vendorId) {
-      fetchProperties(); // Fetch properties when the vendorId is available
+      fetchProperties();
     }
   }, [vendorId]);
 
   const handleEdit = (id) => {
-    console.log(`Edit property with ID: ${id}`);
-    navigate(`/vendor/edit-property/${id}`); // Navigate to EditProperty page with property ID
+    navigate(`/vendor/edit-property/${id}`);
   };
 
   const handleSoldOut = (id) => {
@@ -47,13 +44,13 @@ function PropertyList() {
     // Add logic to handle unlisting the property
   };
 
-  // Conditionally render the loading, error, and properties
+  // Conditionally render loading, error, and properties
   if (loading) {
     return (
-      <div>
+      <div className="flex min-h-screen">
         <VendorSidebar />
-        <div className="flex justify-center items-center min-h-screen">
-          <div className="text-lg font-semibold">Loading properties...</div>
+        <div className="flex-1 flex justify-center items-center">
+          <div className="text-xl font-semibold text-gray-700">Loading properties...</div>
         </div>
       </div>
     );
@@ -61,26 +58,28 @@ function PropertyList() {
 
   if (error) {
     return (
-      <div>
+      <div className="flex min-h-screen">
         <VendorSidebar />
-        <div className="text-red-500 text-center mt-10">{error}</div>
+        <div className="flex-1 flex justify-center items-center">
+          <div className="text-red-500 text-lg">{error}</div>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen">
       <VendorSidebar />
-      <div className="flex-1 p-8">
-        <h1 className="text-3xl font-bold mb-8 text-gray-800">Property List</h1>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+      <div className="ml-64 flex-1 p-8">
+        <h1 className="text-4xl font-semibold mb-10 text-gray-900">My Properties</h1>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {properties.length > 0 ? (
             properties.map((property) => (
               <div
                 key={property._id}
-                className="bg-white p-6 shadow-lg rounded-xl transform transition duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2"
+                className="bg-white p-6 shadow-lg rounded-xl transform transition duration-300 ease-in-out hover:shadow-2xl hover:-translate-y-2 flex flex-col justify-between min-h-[450px]"
               >
-                <div className="relative">
+                <div className="relative flex-grow">
                   {property.mediaUrls && property.mediaUrls.length > 0 && (
                     <img
                       src={property.mediaUrls[0]}
@@ -92,35 +91,52 @@ function PropertyList() {
                     {property.availableStatus}
                   </div>
                 </div>
-                <div className="mt-4">
+
+                <div className="mt-4 flex-grow">
                   <h2 className="text-2xl font-semibold text-gray-800 mb-2">
                     {property.title}
                   </h2>
-                  <p className="text-lg text-gray-600 mb-1">
-                    Price:{" "}
-                    <span className="font-bold">₹{property.expectedPrice}</span>
+
+                  {/* Price */}
+                  <p className="text-lg font-bold text-gray-800 mb-1">
+                    Price: <span className="font-extrabold text-gray-900">₹{property.expectedPrice}</span>
                   </p>
 
-                  <p className="text-md text-gray-500 mb-1">
-                    Category:{" "}
-                    <span className="font-medium">
-                      {property.category.name}
-                    </span>
+                  {/* Features */}
+                  <div className="flex items-center space-x-4 text-md text-gray-600 mb-2">
+                    <div className="flex items-center space-x-1">
+                      <FaBed className="text-blue-800" />
+                      <span>{property.bedrooms} Beds</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <FaBath className="text-blue-800" />
+                      <span>{property.washrooms} Baths</span>
+                    </div>
+                    <div className="flex items-center space-x-1">
+                      <FaCar className="text-blue-800" />
+                      <span>{property.parking === 'available' ? "Parking Available" : "No Parking"}</span>
+                    </div>
+                  </div>
+
+                  {/* Category */}
+                  <p className="text-md font-semibold text-gray-700 mb-1">
+                    Category: <span className="font-bold text-gray-900">{property.category.name}</span>
                   </p>
-                  <p className="text-md text-gray-500 mb-1">
-                    Location:{" "}
-                    <span className="font-medium">{property.address}</span>
+
+                  {/* Location */}
+                  <p className="text-md font-semibold text-gray-700 mb-1">
+                    Location: <span className="font-bold text-gray-900">{property.address}</span>
                   </p>
-                  <p className="text-md text-gray-500 mb-1">
-                    Owner:{" "}
-                    <span className="font-medium capitalize">
-                      {property.ownershipStatus}
-                    </span>
+
+                  {/* Owner */}
+                  <p className="text-md font-semibold text-gray-700 mb-1">
+                    Owner: <span className="font-bold capitalize text-gray-900">{property.ownershipStatus}</span>
                   </p>
                 </div>
+
                 <div className="flex justify-between space-x-2 mt-6">
                   <button
-                    className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-300 ease-in-out text-sm"
+                    className="flex-1 bg-blue-800 hover:bg-blue-700 text-white py-2 px-4 rounded-lg transition duration-300 ease-in-out text-sm"
                     onClick={() => handleEdit(property._id)}
                   >
                     Edit
@@ -129,7 +145,7 @@ function PropertyList() {
                     className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition duration-300 ease-in-out text-sm"
                     onClick={() => handleSoldOut(property._id)}
                   >
-                    Mark as soldout
+                    Mark as Sold
                   </button>
                 </div>
               </div>

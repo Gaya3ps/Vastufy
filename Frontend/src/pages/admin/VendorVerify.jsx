@@ -3,14 +3,16 @@ import { Link } from 'react-router-dom';
 import axiosInstance from '../../services/axiosInstance';
 import Sidebar from '../../components/Sidebar';
 import { UserIcon } from '@heroicons/react/24/solid';
+import { FaSearch } from 'react-icons/fa';
 
-function VendorVerify() {
+const VendorVerify = () => {
   const [vendors, setVendors] = useState([]);
   const [licenseData, setLicenseData] = useState({});
   const [status, setStatus] = useState('idle');
   const [error, setError] = useState(null);
   const [searchTerm, setSearchTerm] = useState('');
 
+  // Fetch vendors
   const fetchVendors = async () => {
     setStatus('loading');
     try {
@@ -24,9 +26,10 @@ function VendorVerify() {
     }
   };
 
+  // Fetch license data
   const fetchLicenseData = async (email) => {
     try {
-      if (!licenseData[email]) { 
+      if (!licenseData[email]) {
         const response = await axiosInstance.get(`/license/${email}`);
         setLicenseData(prevData => ({
           ...prevData,
@@ -42,41 +45,32 @@ function VendorVerify() {
     fetchVendors();
   }, []);
 
+  // Handle search term change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
   };
 
   return (
-     <div className="flex h-screen bg-['#155e75'] overflow-hidden">
+    <div className="flex h-screen bg-[#f4f4f9] overflow-hidden ml-64">
       <Sidebar />
       <div className="flex-1 p-6 overflow-y-auto">
-        <div className="flex items-center justify-between mb-4">
-          <div className="flex items-center bg-white rounded shadow-md">
-            <input
-              type="text"
-              placeholder="Search vendors"
-              className="px-4 py-2 w-64 border-none focus:outline-none"
-              value={searchTerm}
-              onChange={handleSearchChange}
-            />
-            <button className="px-4 py-2 bg-gray-200 border-l border-gray-300">
-              <svg
-                className="w-5 h-5 text-gray-500"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-4.35-4.35M9 14a5 5 0 1 1 10 0 5 5 0 0 1-10 0zm0 0v1a1 1 0 0 0 1 1h3m-4-6h4"
-                />
-              </svg>
-            </button>
-          </div>
+        <h1 className="text-3xl font-semibold text-[#2D2926FF] mb-6">Vendor Verification</h1>
+
+        {/* Search Bar */}
+        <div className="flex items-center mb-6 bg-white rounded-lg shadow-lg p-4 max-w-lg mx-0">
+          <input
+            type="text"
+            placeholder="Search vendors..."
+            className="w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#155e75] text-lg"
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          <button className="ml-2 p-2 rounded-lg bg-[#155e75] text-white">
+          <FaSearch className="w-5 h-5 text-white" />
+          </button>
         </div>
 
+        {/* Vendor Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {status === 'loading' ? (
             <p className="text-center">Loading...</p>
@@ -84,9 +78,7 @@ function VendorVerify() {
             <p className="text-center text-red-500">{error}</p>
           ) : vendors.length > 0 ? (
             vendors
-              .filter((vendor) =>
-                vendor.name.toLowerCase().includes(searchTerm.toLowerCase())
-              )
+              .filter((vendor) => vendor.name.toLowerCase().includes(searchTerm.toLowerCase()))
               .map((vendor) => {
                 const vendorLicense = licenseData[vendor.email];
                 if (!vendorLicense) {
@@ -94,14 +86,11 @@ function VendorVerify() {
                 }
                 return (
                   <Link to={`/admin/vendor/${vendor._id}`} key={vendor._id}>
-                     <div className="bg-[#0e7490]  shadow-md rounded-lg p-6 flex items-center space-x-4 transition-transform duration-200 ease-in-out transform hover:scale-105 hover:shadow-lg">
-
-                         <UserIcon className="w-12 h-12 text-white"/>
-                        <div>
-                        <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
-                          {vendor.name}
-                        </h2>
-                        <p className="text-gray-600 dark:text-gray-300">{vendor.email}</p>
+                    <div className="bg-[#0e7490] shadow-lg rounded-lg p-6 flex items-center space-x-4 transition-all duration-300 ease-in-out transform hover:scale-105 hover:shadow-xl cursor-pointer">
+                      <UserIcon className="w-16 h-16 text-white" />
+                      <div className="text-white">
+                        <h2 className="text-xl font-semibold">{vendor.name}</h2>
+                        <p className="text-lg">{vendor.email}</p>
                       </div>
                     </div>
                   </Link>
@@ -114,6 +103,6 @@ function VendorVerify() {
       </div>
     </div>
   );
-}
+};
 
 export default VendorVerify;

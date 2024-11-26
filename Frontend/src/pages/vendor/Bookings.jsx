@@ -69,11 +69,11 @@ function Bookings() {
     actions: (
       <div className="flex gap-2">
         {booking.status === "accepted" ? (
-          <button className="px-4 py-2 bg-gray-400 text-white rounded" disabled>
+          <button className="px-4 py-2 bg-green-400 text-white rounded" disabled>
             Accepted
           </button>
         ) : booking.status === "rejected" ? (
-          <button className="px-4 py-2 bg-gray-400 text-white rounded" disabled>
+          <button className="px-4 py-2 bg-red-400 text-white rounded" disabled>
             Rejected
           </button>
         ) : (
@@ -102,7 +102,7 @@ function Bookings() {
       <VendorSidebar />
 
       {/* Main content */}
-      <div className="flex-grow p-8">
+      <div className="ml-64 flex-grow p-8">
         <h1 className="text-4xl font-bold mb-6 text-gray-800">Bookings</h1>
 
         {loading ? (

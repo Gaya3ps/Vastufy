@@ -8,7 +8,6 @@ import {store,  persistor } from "./app/store.js";
 import { PersistGate } from "redux-persist/integration/react";
 import Modal from 'react-modal'
 Modal.setAppElement('#root');
-import { Toaster } from "sonner";
 import SocketProvider from "./services/socketProvider.jsx";
 
 createRoot(document.getElementById("root")).render(
@@ -17,7 +16,6 @@ createRoot(document.getElementById("root")).render(
       <SocketProvider>
        <PersistGate loading={null} persistor={persistor}>
          <BrowserRouter>
-          <Toaster/>
           <App/>
         </BrowserRouter>
        </PersistGate>
