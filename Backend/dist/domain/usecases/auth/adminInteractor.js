@@ -48,9 +48,9 @@ exports.default = {
         const users = (0, mongoAdminRepository_1.getAllUsers)();
         return users;
     }),
-    getUsers: (page, limit) => __awaiter(void 0, void 0, void 0, function* () {
+    getUsers: () => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const users = yield (0, mongoAdminRepository_1.getPaginatedUsers)(page, limit);
+            const users = yield (0, mongoAdminRepository_1.getPaginatedUsers)();
             return users;
         }
         catch (error) {

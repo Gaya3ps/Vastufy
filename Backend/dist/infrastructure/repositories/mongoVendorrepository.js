@@ -66,7 +66,7 @@ exports.getVendorLicense = getVendorLicense;
 const getAllVendors = () => __awaiter(void 0, void 0, void 0, function* () {
     console.log("got vendor");
     // return await Vendor.find({ is_blocked:false},{_id:1,name:1,email:1,city:1,service:1,is_blocked:1})
-    return yield vendorModel_1.Vendor.find({ is_verified: true, is_blocked: false }, { _id: 1, name: 1, email: 1, city: 1, service: 1, is_blocked: 1 });
+    return yield vendorModel_1.Vendor.find({ is_verified: true }, { _id: 1, name: 1, email: 1, city: 1, service: 1, is_blocked: 1 });
 });
 exports.getAllVendors = getAllVendors;
 const updateVendor = (id, data) => __awaiter(void 0, void 0, void 0, function* () {

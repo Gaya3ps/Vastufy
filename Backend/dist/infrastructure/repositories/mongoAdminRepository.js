@@ -31,16 +31,11 @@ const getAllUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     }
 });
 exports.getAllUsers = getAllUsers;
-const getPaginatedUsers = (page, limit) => __awaiter(void 0, void 0, void 0, function* () {
+const getPaginatedUsers = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const users = yield userModel_1.Users.find()
-            .skip((page - 1) * limit)
-            .limit(limit);
-        const totalUsers = yield userModel_1.Users.countDocuments();
-        const totalPages = Math.ceil(totalUsers / limit);
+        const users = yield userModel_1.Users.find();
         return {
             users,
-            totalPages,
         };
     }
     catch (error) {
@@ -170,7 +165,7 @@ const addSubCategoryToDB = (newSubcategoryData) => __awaiter(void 0, void 0, voi
     }
     catch (error) {
         // Throw the error to handle it in the calling function
-        throw new Error(error instanceof Error ? error.message : 'Unknown error occurred');
+        throw new Error(error instanceof Error ? error.message : "Unknown error occurred");
     }
 });
 exports.addSubCategoryToDB = addSubCategoryToDB;
@@ -219,7 +214,9 @@ exports.deletesubCategoryInDB = deletesubCategoryInDB;
 // };
 const propertyList = () => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const listedProperties = yield propertyModel_1.PropertyModel.find({ is_verified: false }).populate('vendor');
+        const listedProperties = yield propertyModel_1.PropertyModel.find({
+            is_verified: false,
+        }).populate("vendor");
         return listedProperties;
     }
     catch (error) {
@@ -228,7 +225,9 @@ const propertyList = () => __awaiter(void 0, void 0, void 0, function* () {
 });
 exports.propertyList = propertyList;
 const getPropertyById = (id) => __awaiter(void 0, void 0, void 0, function* () {
-    return yield propertyModel_1.PropertyModel.findById(id).populate('vendor').populate('category');
+    return yield propertyModel_1.PropertyModel.findById(id)
+        .populate("vendor")
+        .populate("category");
 });
 exports.getPropertyById = getPropertyById;
 const updatePropertyVerificationStatus = (id, is_verified) => __awaiter(void 0, void 0, void 0, function* () {
@@ -238,7 +237,7 @@ exports.updatePropertyVerificationStatus = updatePropertyVerificationStatus;
 const addSubscriptionPlanToDB = (subscriptionData) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         // Convert prioritySupport from boolean to 'yes' or 'no'
-        const formattedSubscriptionData = Object.assign(Object.assign({}, subscriptionData), { prioritySupport: subscriptionData.prioritySupport ? 'yes' : 'no' });
+        const formattedSubscriptionData = Object.assign(Object.assign({}, subscriptionData), { prioritySupport: subscriptionData.prioritySupport ? "yes" : "no" });
         const newSubscriptionPlan = new subscriptionPlanModel_1.SubscriptionPlanModel(subscriptionData);
         const savedSubscriptionPlan = yield newSubscriptionPlan.save();
         return savedSubscriptionPlan;
@@ -263,8 +262,8 @@ const changeToggleStatus = (planId, status) => __awaiter(void 0, void 0, void 0,
         return yield subscriptionPlanModel_1.SubscriptionPlanModel.findByIdAndUpdate(planId, { status }, { new: true });
     }
     catch (error) {
-        console.error('Error updating subscription plan status:', error);
-        throw new Error('Failed to update status');
+        console.error("Error updating subscription plan status:", error);
+        throw new Error("Failed to update status");
     }
 });
 exports.changeToggleStatus = changeToggleStatus;

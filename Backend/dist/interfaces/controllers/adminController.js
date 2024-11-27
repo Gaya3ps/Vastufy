@@ -43,8 +43,7 @@ exports.default = {
     }),
     getUsers: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            const { page = 1, limit = 10 } = req.query;
-            const users = yield adminInteractor_1.default.getUsers(Number(page), Number(limit));
+            const users = yield adminInteractor_1.default.getUsers();
             res.status(200).json(users);
         }
         catch (error) {
