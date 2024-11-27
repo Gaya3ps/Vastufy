@@ -67,9 +67,9 @@ export default {
     const users = getAllUsers();
     return users;
   },
-  getUsers: async (page: number, limit: number): Promise<PaginatedUsers> => {
+  getUsers: async () => {
     try {
-      const users = await getPaginatedUsers(page, limit);
+      const users = await getPaginatedUsers();
       return users;
     } catch (error: any) {
       throw new Error(error.message);

@@ -93,9 +93,6 @@ function Properties() {
                   className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center">
                     <FaEye className="inline-block mr-2" /> View Details
                   </button>
-                  <button className="bg-green-600 hover:bg-green-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center">
-                    <FaPhoneAlt className="inline-block mr-2" /> Contact Seller
-                  </button>
                 </div>
               </div>
             ))}

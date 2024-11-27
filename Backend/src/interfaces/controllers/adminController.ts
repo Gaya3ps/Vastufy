@@ -32,8 +32,8 @@ export default {
 
   getUsers: async (req: Request, res: Response): Promise<void> => {
     try {
-      const { page = 1, limit = 10 } = req.query;
-      const users = await adminInteractor.getUsers(Number(page), Number(limit));
+      
+      const users = await adminInteractor.getUsers();
       res.status(200).json(users);
     } catch (error: any) {
       console.error(error.message);

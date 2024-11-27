@@ -6,13 +6,14 @@ import {
   FaUsers,
   FaChartBar,
   FaAdjust,
-  FaServicestack,
+  FaCreditCard,
+  FaBuilding
 } from "react-icons/fa";
 import { BiLogOut } from "react-icons/bi";
 import { MdKeyboardArrowDown, MdKeyboardArrowUp } from "react-icons/md";
 import Cookies from "js-cookie";
 import { clearAdmin } from "../features/admin/adminslice";
-import logo from "../assets/VastufyLogo2.png";
+import logo from '../assets/logo3.jpg'
 
 function Sidebar() {
   const [vendorMenuOpen, setVendorMenuOpen] = useState(false);
@@ -42,8 +43,8 @@ function Sidebar() {
   return (
     <div className="fixed top-0 left-0 w-64 h-full bg-[#155e75] shadow-lg z-10 overflow-y-auto">
       {/* Updated background color */}
-      <div className="p-6 flex items-center justify-center">
-        <img src={logo} alt="Logo" className="h-16 w-auto" /> {/* Added logo */}
+      <div className="p-6 flex items-center">
+        <img src={logo} alt="Logo" className="max-h-24 w-auto object-contain" /> {/* Added logo */}
       </div>
       <nav className="mt-6">
         <Link
@@ -101,7 +102,7 @@ function Sidebar() {
             className="flex items-center px-4 py-2 text-gray-600 dark:text-gray-200 hover:bg-[#083344] cursor-pointer"
             onClick={togglePropertyMenu}
           >
-            <FaServicestack className="w-5 h-5" />
+            <FaBuilding className="w-5 h-5" />
             <span className="mx-4 font-medium">Property Management</span>
             {propertyMenuOpen ? (
               <MdKeyboardArrowUp className="w-5 h-5 ml-auto" />
@@ -148,7 +149,7 @@ function Sidebar() {
           className="flex items-center px-4 py-2 mt-2 text-gray-600 dark:text-gray-200 hover:bg-[#083344]"
           to="/admin/subscriptionplans"
         >
-          <FaServicestack className="w-5 h-5" />
+          <FaCreditCard className="w-5 h-5" />
           <span className="mx-4 font-medium">Subscription Plans</span>
         </Link>
 

@@ -92,7 +92,7 @@ const SubscriptionRevenueChart = () => {
       y: {
         title: {
           display: true,
-          text: 'Revenue ($)'
+          text: 'Revenue (₹)'
         },
         beginAtZero: true,
         ticks: {

@@ -13,7 +13,7 @@ import { useNavigate } from "react-router";
 import { toast } from "sonner";
 import { GoogleAuthProvider} from "firebase/auth";
 import { auth, provider,signInWithPopup } from "../../firebase/firebase";
-import logo from '../../assets/VastufyLogo2.png'
+import logo from '../../assets/logo3.jpg'
 
 
 

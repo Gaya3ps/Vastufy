@@ -91,6 +91,9 @@ const VendorVerify = () => {
                       <div className="text-white">
                         <h2 className="text-xl font-semibold">{vendor.name}</h2>
                         <p className="text-lg">{vendor.email}</p>
+                        <p className="text-lg">{vendor.mobileNumber}</p>
+
+
                       </div>
                     </div>
                   </Link>

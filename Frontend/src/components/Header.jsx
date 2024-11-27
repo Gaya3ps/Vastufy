@@ -3,7 +3,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
 import { FaUserCircle } from 'react-icons/fa';
 import { FiLogOut } from 'react-icons/fi';
-import logo from '../assets/VastufyLogo2.png';
+import logo from '../assets/logo3.jpg'
 import { clearUser, selectUser } from '../features/auth/authSlice';
 import { toast } from 'sonner';
 
@@ -64,14 +64,14 @@ const Header = () => {
   }, []);
 
   return (
-    <header className="fixed top-0 left-0 w-full z-50">
+    <header className="fixed top-0 left-0 w-full z-50 ">
       <nav className="max-w-4xl mx-auto bg-white shadow-lg py-3 px-8 rounded-lg mt-4">
         <div className="flex justify-between items-center">
-          <div className="flex justify-center items-center w-full space-x-4">
-            <Link to="/" className="flex items-center">
-              <img src={logo} alt="Vastufy Logo" className="h-14 w-auto" />
-            </Link>
-            <ul className="flex space-x-4 text-gray-800 font-medium">
+          <div className="flex justify-center items-center w-full space-x-4 ">
+            <div className="flex items-center h-16 overflow-hidden">
+              <img src={logo} alt="Vastufy Logo" className="max-h-24 w-auto object-contain" />
+            </div>
+            <ul className="flex space-x-4 text-gray-800 font-bold">
               <li className="hover:text-blue-500 transition duration-300">
                 <Link to="/">Home</Link>
               </li>

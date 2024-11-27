@@ -112,7 +112,7 @@ function LandingPage() {
         <div className="relative">
           {/* Left Arrow */}
           <button
-            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none"
+            className="absolute left-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-300 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none"
             style={{ zIndex: 20 }}
             onClick={handlePrev}
           >
@@ -169,7 +169,7 @@ function LandingPage() {
 
           {/* Right Arrow */}
           <button
-            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-600 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none"
+            className="absolute right-2 top-1/2 transform -translate-y-1/2 z-10 bg-blue-300 text-white p-2 rounded-full shadow-lg hover:bg-blue-700 focus:outline-none"
             style={{ zIndex: 20 }}
             onClick={handleNext}
           >
@@ -191,22 +191,16 @@ function LandingPage() {
       </section>
 
       {/* Banner */}
-<section
-  className="relative flex items-center justify-center h-[500px] mx-auto max-w-6xl rounded-lg overflow-hidden shadow-lg my-12"
+      <section
+  className="relative flex items-center justify-center h-[400px] mx-12 rounded-lg overflow-hidden  my-12"
   style={{
-    backgroundImage: `url('/banner1.jpg')`,
-    backgroundSize: 'cover',
+    backgroundImage: `url('/banner2.jpg')`,
+    backgroundSize: 'contain',
     backgroundPosition: 'center',
     backgroundRepeat: 'no-repeat',
   }}
 >
   <div className="relative z-10 text-center text-white px-8">
-    <h2 className="text-4xl md:text-5xl font-extrabold leading-tight drop-shadow-md">
-      Special Offers on Premium Properties!
-    </h2>
-    <p className="mt-4 text-lg md:text-xl font-medium drop-shadow-md">
-      Discover exclusive discounts and offers on premium listings. Limited time only!
-    </p>
     <a
       href="/properties"
       className="mt-8 inline-block bg-white text-blue-600 px-8 py-3 text-lg font-semibold rounded-lg shadow-md hover:bg-gray-100 transition-transform transform hover:scale-105"
@@ -215,8 +209,6 @@ function LandingPage() {
     </a>
   </div>
 </section>
-
-
 
 {/* Key Elements */}
 <section className="bg-[#075985] py-12 mt-12">

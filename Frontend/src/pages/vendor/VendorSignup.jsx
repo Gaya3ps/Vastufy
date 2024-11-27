@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Formik, Form, Field, ErrorMessage } from 'formik';
 import * as Yup from 'yup';
-import logo from "../../assets/VastufyLogo2.png"; 
+import logo from '../../assets/logo3.jpg'
 import { useDispatch } from 'react-redux';
 import {useNavigate} from 'react-router-dom';
 import { vendorSignup } from '../../features/vendor/vendorSlice';

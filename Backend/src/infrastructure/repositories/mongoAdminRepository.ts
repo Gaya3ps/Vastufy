@@ -21,20 +21,11 @@ export const getAllUsers = async () => {
   }
 };
 
-export const getPaginatedUsers = async (
-  page: number,
-  limit: number
-): Promise<PaginatedUsers> => {
+export const getPaginatedUsers = async () => {
   try {
-    const users = await Users.find()
-      .skip((page - 1) * limit)
-      .limit(limit);
-    const totalUsers = await Users.countDocuments();
-    const totalPages = Math.ceil(totalUsers / limit);
-
+    const users = await Users.find();
     return {
       users,
-      totalPages,
     };
   } catch (error: any) {
     throw new Error(error.message);
@@ -200,39 +191,43 @@ export const addSubCategoryToDB = async (newSubcategoryData: {
     return savedSubcategory;
   } catch (error) {
     // Throw the error to handle it in the calling function
-    throw new Error(error instanceof Error ? error.message : 'Unknown error occurred');
+    throw new Error(
+      error instanceof Error ? error.message : "Unknown error occurred"
+    );
   }
 };
 
-export const listsubCategory = async()=>{
-try {
-  const listedSubCategories = await Subcategory.find();
-  return listedSubCategories;
-} catch (error: any) {
-  throw new Error(error.message);
-}
+export const listsubCategory = async () => {
+  try {
+    const listedSubCategories = await Subcategory.find();
+    return listedSubCategories;
+  } catch (error: any) {
+    throw new Error(error.message);
+  }
 };
 
-
- export const editSubCategoryInDB = async( id:string,editedSubCategoryData:{ name:string,categoryId:string})=>{
+export const editSubCategoryInDB = async (
+  id: string,
+  editedSubCategoryData: { name: string; categoryId: string }
+) => {
   try {
-    const updatedSubCategory = await Subcategory. findByIdAndUpdate(
+    const updatedSubCategory = await Subcategory.findByIdAndUpdate(
       id,
       {
         name: editedSubCategoryData.name,
         categoryId: editedSubCategoryData.categoryId,
       },
-      {new : true,runValidators : true}
+      { new: true, runValidators: true }
     );
     return updatedSubCategory;
   } catch (error) {
-        throw new Error(
-          error instanceof Error ? error.message : "Error updating category"
-        );
-      }
- }
+    throw new Error(
+      error instanceof Error ? error.message : "Error updating category"
+    );
+  }
+};
 
- export const deletesubCategoryInDB = async (id: string) => {
+export const deletesubCategoryInDB = async (id: string) => {
   try {
     const deletedsubCategory = await Subcategory.findByIdAndDelete(id);
     return deletedsubCategory;
@@ -242,7 +237,6 @@ try {
     );
   }
 };
-
 
 // export const listProperties = async () =>{
 //   try {
@@ -255,12 +249,13 @@ try {
 //   }
 // };
 
-
-export const propertyList = async () =>{
+export const propertyList = async () => {
   try {
-    const listedProperties = await PropertyModel.find({is_verified : false}).populate('vendor');
+    const listedProperties = await PropertyModel.find({
+      is_verified: false,
+    }).populate("vendor");
     return listedProperties;
-  }catch (error) {
+  } catch (error) {
     throw new Error(
       error instanceof Error ? error.message : "Error fetching properties"
     );
@@ -268,10 +263,13 @@ export const propertyList = async () =>{
 };
 
 export const getPropertyById = async (id: string) => {
-  return await PropertyModel.findById(id).populate('vendor').populate('category');
+  return await PropertyModel.findById(id)
+    .populate("vendor")
+    .populate("category");
 };
 
- export const updatePropertyVerificationStatus = async( id: string,
+export const updatePropertyVerificationStatus = async (
+  id: string,
   is_verified: boolean
 ) => {
   return await PropertyModel.findByIdAndUpdate(
@@ -281,7 +279,6 @@ export const getPropertyById = async (id: string) => {
   );
 };
 
-
 export const addSubscriptionPlanToDB = async (subscriptionData: {
   planName: string;
   price: number;
@@ -290,12 +287,12 @@ export const addSubscriptionPlanToDB = async (subscriptionData: {
   prioritySupport: boolean;
 }) => {
   try {
-       // Convert prioritySupport from boolean to 'yes' or 'no'
-       const formattedSubscriptionData = {
-        ...subscriptionData,
-        prioritySupport: subscriptionData.prioritySupport ? 'yes' : 'no', // Boolean to string conversion
-      };
-  
+    // Convert prioritySupport from boolean to 'yes' or 'no'
+    const formattedSubscriptionData = {
+      ...subscriptionData,
+      prioritySupport: subscriptionData.prioritySupport ? "yes" : "no", // Boolean to string conversion
+    };
+
     const newSubscriptionPlan = new SubscriptionPlanModel(subscriptionData);
     const savedSubscriptionPlan = await newSubscriptionPlan.save();
     return savedSubscriptionPlan;
@@ -304,26 +301,24 @@ export const addSubscriptionPlanToDB = async (subscriptionData: {
   }
 };
 
-export const listSubscriptionPlans = async()=>{
+export const listSubscriptionPlans = async () => {
   try {
     const listedSubscriptionPlans = await SubscriptionPlanModel.find();
     return listedSubscriptionPlans;
   } catch (error: any) {
     throw new Error(error.message);
   }
-}
+};
 
 export const changeToggleStatus = async (planId: string, status: boolean) => {
   try {
     return await SubscriptionPlanModel.findByIdAndUpdate(
       planId,
       { status },
-      { new: true } 
+      { new: true }
     );
   } catch (error) {
-    console.error('Error updating subscription plan status:', error);
-    throw new Error('Failed to update status');
+    console.error("Error updating subscription plan status:", error);
+    throw new Error("Failed to update status");
   }
 };
-
-

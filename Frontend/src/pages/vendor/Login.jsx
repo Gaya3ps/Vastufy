@@ -6,7 +6,8 @@ import { useDispatch, useSelector } from "react-redux";
 import {loginVendor} from "../../features/vendor/vendorSlice";
 import { useNavigate } from "react-router";
 import { toast } from "sonner";
-import logo from '../../assets/VastufyLogo2.png'; 
+import logo from '../../assets/logo3.jpg'
+
 
 
 

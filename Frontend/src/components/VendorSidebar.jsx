@@ -13,7 +13,8 @@ import {
 import { Link, useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
 import { clearVendor } from "../features/vendor/vendorSlice";
-import logo from "../assets/VastufyLogo2.png";
+import logo from '../assets/logo3.jpg'
+
 
 const VendorSidebar = () => {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ const VendorSidebar = () => {
         <img
           src={logo}
           alt="Logo"
-          className="h-28 w-auto mx-auto mb-3 -translate-x-14"
+          className="h-24 w-auto mx-auto mb-3 -translate-x-14"
         />
       </div>
 

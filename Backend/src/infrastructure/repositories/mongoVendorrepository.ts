@@ -79,7 +79,7 @@ export const getAllVendors = async () => {
   console.log("got vendor");
   // return await Vendor.find({ is_blocked:false},{_id:1,name:1,email:1,city:1,service:1,is_blocked:1})
   return await Vendor.find(
-    { is_verified: true, is_blocked: false },
+    { is_verified: true },
     { _id: 1, name: 1, email: 1, city: 1, service: 1, is_blocked: 1 }
   );
 };

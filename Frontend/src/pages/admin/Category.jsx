@@ -246,22 +246,22 @@ function Category() {
               key={category._id}
               className="group relative bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-4"
             >
-              <h3 className="text-lg font-semibold text-gray-800">
+              <h3 className="text-lg font-bold text-gray-800">
                 {category.name}
               </h3>
-              <p className="text-sm text-gray-500 mt-2">
+              <p className="text-sm font-semibold text-gray-500 mt-2">
                 {category.description}
               </p>
               <div className="mt-4 flex space-x-4">
                 <button
                   onClick={() => openEditModal(category)}
-                  className="text-blue-500 hover:underline"
+                   className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600"
                 >
                   Edit
                 </button>
                 <button
                   onClick={() => openConfirmationModal(category)} // Open confirmation modal
-                  className="text-red-500 hover:underline"
+                   className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600"
                 >
                   Delete
                 </button>
@@ -281,10 +281,10 @@ function Category() {
                 key={subcategory.id}
                 className="group relative bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow duration-300 p-4"
               >
-                <h4 className="text-lg font-semibold text-gray-800">
+                <h4 className="text-lg font-bold text-gray-800">
                   {subcategory.name}
                 </h4>
-                <p className="text-sm text-gray-500 mt-2">
+                <p className="text-sm font-semibold  text-gray-500 mt-2">
                   Category:{" "}
                   {categories.find((cat) => cat._id === subcategory.categoryId)
                     ?.name || "Unknown"}
@@ -292,13 +292,13 @@ function Category() {
                 <div className="mt-4 flex space-x-4">
                 <button
                     onClick={() => openEditSubcategoryModal(subcategory)}
-                    className="text-blue-500 hover:underline"
+                    className="bg-blue-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-blue-600"
                   >
                     Edit
                   </button>
                   <button 
                    onClick={() => openSubcategoryConfirmationModal(subcategory)}
-                     className="text-red-500 hover:underline">
+                    className="bg-red-500 text-white font-bold py-2 px-4 rounded-lg hover:bg-red-600">
                     Delete
                   </button>
                 </div>
