@@ -27,11 +27,19 @@ const PORT = process.env.PORT || 5001;
 //   allowedHeaders: ["Content-Type", "Authorization"],
 //   credentials: true,
 // };
+// const corsOptions = {
+//   origin: ["https://vastufy.vercel.app"], // Allow the specific frontend URL
+//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+//   credentials: true,
+// };
+// app.options("*", cors(corsOptions))
+// app.use(cors(corsOptions));
 const corsOptions = {
-    origin: ["https://vastufy.vercel.app"], // Allow the specific frontend URL
+    origin: "*", // Allow all origins
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
+    credentials: false, // Set to false because with "*" you cannot allow credentials
 };
 app.options("*", (0, cors_1.default)(corsOptions));
 app.use((0, cors_1.default)(corsOptions));
