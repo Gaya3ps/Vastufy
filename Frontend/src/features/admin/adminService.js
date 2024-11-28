@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const API_URL = 'https://vastufy.site/api/admin';
+const API_URL = 'https://vastufy.onrender.com/api/admin';
 
 const adminLogin = async (credentials) => {
     try {

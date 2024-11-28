@@ -21,33 +21,18 @@ connectDB();
 const PORT = process.env.PORT || 5001;
 
 
-// const corsOptions = {
-//   // origin: "http://localhost:5173",
-//   origin:"https://vastufy.vercel.app",
-//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true,
-// };
-
-// const corsOptions = {
-//   origin: ["https://vastufy.vercel.app"], // Allow the specific frontend URL
-//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true,
-// };
-// app.options("*", cors(corsOptions))
-// app.use(cors(corsOptions));
-
 const corsOptions = {
-  origin: "*", // Allow all origins
+  // origin: "http://localhost:5173",
+  origin:"https://vastufy.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
-  credentials: false, // Set to false because with "*" you cannot allow credentials
+  credentials: true,
 };
 
-app.options("*", cors(corsOptions));
-app.use(cors(corsOptions));
 
+app.options('*', cors(corsOptions));
+
+app.use(cors(corsOptions));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());

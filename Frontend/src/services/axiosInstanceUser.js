@@ -1,7 +1,7 @@
 // import axios from "axios";
 // import Cookies from "js-cookie";
 // import { jwtDecode } from "jwt-decode";
-// const baseURL = "https://vastufy.site/api/users";
+// const baseURL = "https://vastufy.onrender.com/api/users";
 // const axiosInstanceUser = axios.create({
 //   baseURL,
 //   headers: {
@@ -121,7 +121,7 @@
 import axios from "axios";
 import Cookies from "js-cookie";
 
-const baseURL = "https://vastufy.site/api/users";
+const baseURL = "https://vastufy.onrender.com/api/users";
 const axiosInstanceUser = axios.create({
   baseURL,
   headers: {
