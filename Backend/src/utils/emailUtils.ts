@@ -237,7 +237,7 @@ export const sendOTPEmail = async (email: string, otp: string, name: string) => 
 export const sendPasswordResetEmail = async (email: string, resetToken: string, name: string) => {
   try {
     const transporter = createTransporter();
-    const resetLink = `http://localhost:5173/reset-password?token=${resetToken}`;
+    const resetLink = `https://vastufy.vercel.app/reset-password?token=${resetToken}`;
 
 
     const mailOptions: nodemailer.SendMailOptions = {
