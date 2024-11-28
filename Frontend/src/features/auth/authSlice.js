@@ -10,7 +10,7 @@ export  const signupUser = createAsyncThunk(
   async (userData, { rejectWithValue }) => {
     try {
       console.log(userData)
-      const response = await axios.post('http://localhost:5000/api/users/signup', userData );
+      const response = await axios.post('https://vastufy.site/api/users/signup', userData );
       return response.data; 
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -22,7 +22,7 @@ export const GoogleAuth = createAsyncThunk(
   'auth/GoogleAuth',
   async (userData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/users/googleAuth', userData );
+      const response = await axios.post('https://vastufy.site/api/users/googleAuth', userData );
       Cookies.set('token',response.data.response.token)
       Cookies.set('refreshToken',response.data.response.refreshToken)
       
@@ -92,7 +92,7 @@ export const forgotPassword = createAsyncThunk(
   'auth/forgotPassword',
   async (email, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/users/forgot-password', { email });
+      const response = await axios.post('https://vastufy.site/api/users/forgot-password', { email });
       toast.success('Password reset link sent');
       return response.data;
     } catch (error) {
@@ -108,7 +108,7 @@ export const resetPassword = createAsyncThunk(
   'auth/resetPassword',
   async ({ token, password }, { rejectWithValue }) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/users/reset-password', {
+      const response = await axios.post('https://vastufy.site/api/users/reset-password', {
         token,
         password
       });

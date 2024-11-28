@@ -3,7 +3,7 @@ import Cookies from 'js-cookie';
 
 
 const axiosInstance = axios.create({
-  baseURL: 'http://localhost:5000/api/admin', 
+  baseURL: 'https://vastufy.site/api/admin', 
   headers: {
     'Content-Type':'application/json',
   },

@@ -23,7 +23,7 @@ function LandingPage() {
   useEffect(() => {
     const fetchVerifiedProperties = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/users/properties');
+        const response = await axios.get('https://vastufy.site/api/users/properties');
         const verifiedProps = response.data.properties;
         setVerifiedProperties(verifiedProps);
       } catch (error) {
