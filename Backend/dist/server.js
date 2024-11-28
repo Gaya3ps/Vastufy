@@ -20,9 +20,15 @@ const server = http_1.default.createServer(app);
 dotenv_1.default.config();
 (0, db_1.default)();
 const PORT = process.env.PORT || 5001;
+// const corsOptions = {
+//   // origin: "http://localhost:5173",
+//   origin:"https://vastufy.vercel.app",
+//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+//   allowedHeaders: ["Content-Type", "Authorization"],
+//   credentials: true,
+// };
 const corsOptions = {
-    // origin: "http://localhost:5173",
-    origin: "https://vastufy.vercel.app",
+    origin: ["https://vastufy.vercel.app"], // Allow the specific frontend URL
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
     credentials: true,
