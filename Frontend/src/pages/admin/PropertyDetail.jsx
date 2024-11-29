@@ -114,7 +114,7 @@ function PropertyDetail() {
 
           {/* Location Advantages */}
           <div>
-            <h3 className="font-semibold text-lg">Location Advantages 🏙️:</h3>
+            <h3 className="font-semibold text-lg">Location Advantages:</h3>
             <ul className="list-disc pl-5 space-y-2">
               {property.locationAdvantages.map((advantage, index) => (
                 <li key={index}>{advantage}</li>

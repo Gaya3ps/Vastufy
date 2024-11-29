@@ -121,9 +121,9 @@ function SubscriptionPlans() {
                         >
                           {plan.status ? 'Unlist' : 'List'}
                         </button>
-                        <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
+                        {/* <button className="bg-blue-500 text-white px-3 py-1 rounded hover:bg-blue-600">
                           View Details
-                        </button>
+                        </button> */}
                       </div>
                     </td>
                   </tr>
