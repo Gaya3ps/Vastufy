@@ -6,6 +6,7 @@ import { faChevronLeft, faChevronRight, faMobileAlt, faHeadset, faHome, faSyncAl
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import {FaPhoneAlt} from "react-icons/fa";
+import { motion } from "framer-motion";
 
 function LandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -248,8 +249,28 @@ function LandingPage() {
   </div>
 </section>
 
-      {/* Contact */}
-      {/* <section className="max-w-6xl mx-auto py-8"> */}
+     {/* Contact Us Section */}
+     <section className="py-16 bg-gray-100 text-gray-800">
+        <div className="flex justify-between items-center max-w-7xl mx-auto px-6 lg:px-16">
+          {/* Left Section - Text Content */}
+          <div className="w-full lg:w-1/2">
+            <motion.h2
+              className="text-4xl text-left font-semibold text-blue-800"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 1.5, ease: "easeOut" }}
+            >
+              For more information about our services,{" "}
+              <span className="text-teal-500">get in touch</span> with our expert
+              consultants
+            </motion.h2>
+            <p className="mt-4 text-lg text-left max-w-2xl mx-auto">
+              Our friendly team is on hand to provide advice, guidance, and
+              support throughout every step of your journey in finding and buying
+              a new house.
+            </p>
+          </div>
+
           {/* Right Section - Contact Details */}
           <div className="w-full lg:w-1/2 mt-8 lg:mt-0 ml-auto flex justify-end">
             <div className="flex flex-col items-start space-y-6">
@@ -273,7 +294,9 @@ function LandingPage() {
               </div>
             </div>
           </div>
-      {/* </section> */}
+        </div>
+      </section>
+
 
       <Footer />
     </div>
