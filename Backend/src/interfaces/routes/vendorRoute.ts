@@ -1,6 +1,8 @@
 import { Router } from "express";
 import vendorController from "../controllers/vendorController";
 import multer from "multer";
+import { protectVendor } from "../frameworks/webserver/middleware/vendorAuthMiddleware";
+
 
 const storage = multer.memoryStorage();
 
@@ -30,31 +32,31 @@ vendorRouter.post("/signup", vendorController.vendorRegister);
 vendorRouter.post("/otp-verification", vendorController.verifyOTP);
 vendorRouter.post("/resend-otp", vendorController.resendOtp);
 vendorRouter.post("/login", vendorController.vendorLogin);
-vendorRouter.post("/uploadlicense", upload, vendorController.licenseUpload);
-vendorRouter.get("/license/:id", vendorController.getLicenseNumber);
-vendorRouter.put("/profile/:id", vendorController.updateVendorProfile);
-vendorRouter.get("/categories", vendorController.getCategories);
-vendorRouter.get("/subcategories", vendorController.getSubCategories);
+vendorRouter.post("/uploadlicense",protectVendor, upload, vendorController.licenseUpload);
+vendorRouter.get("/license/:id", protectVendor, vendorController.getLicenseNumber);
+vendorRouter.put("/profile/:id", protectVendor, vendorController.updateVendorProfile);
+vendorRouter.get("/categories", protectVendor, vendorController.getCategories);
+vendorRouter.get("/subcategories",protectVendor, vendorController.getSubCategories);
 vendorRouter.post(
   "/addproperty",
   uploadPropertyMedia,
   vendorController.addProperty
 );
 vendorRouter.get("/properties/:vendorId", vendorController.getProperties);
-vendorRouter.get("/bookings/:vendorId", vendorController.getBookings);
+vendorRouter.get("/bookings/:vendorId", protectVendor,vendorController.getBookings);
 vendorRouter.put(
   "/edit-property/:propertyId",
   uploadPropertyMedia,
   vendorController.updateProperty
 );
-vendorRouter.get("/edit-properties/:id", vendorController.getPropertyById);
+vendorRouter.get("/edit-properties/:id",protectVendor, vendorController.getPropertyById);
 vendorRouter.put("/accept-booking/:bookingId",vendorController.acceptBooking);
 vendorRouter.put("/reject-booking/:bookingId",vendorController.rejectBooking);
-vendorRouter.get("/chats/:chatId",vendorController.fetchChatHistory);
-vendorRouter.get("/chatList/:vendorId",vendorController.fetchChatList);
-vendorRouter.post("/chats/:chatId/send",vendorController.sendMessage);
-vendorRouter.get("/getVendorSubscription/:vendorId",vendorController.getVendorSubscription);
-vendorRouter.get("/listed-subscription-plans",vendorController.getListedSubscriptionPlans);
+vendorRouter.get("/chats/:chatId",protectVendor,vendorController.fetchChatHistory);
+vendorRouter.get("/chatList/:vendorId",protectVendor,vendorController.fetchChatList);
+vendorRouter.post("/chats/:chatId/send",protectVendor,vendorController.sendMessage);
+vendorRouter.get("/getVendorSubscription/:vendorId",protectVendor,vendorController.getVendorSubscription);
+vendorRouter.get("/listed-subscription-plans",protectVendor,vendorController.getListedSubscriptionPlans);
 vendorRouter.post("/create-stripe-session",vendorController.buySubscription);
 vendorRouter.post('/add-vendor-to-subscription', vendorController.addVendorToSubscription);
 vendorRouter.get('/subscribed-plan/:vendorId', vendorController.subscribedPlan);

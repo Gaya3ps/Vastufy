@@ -8,7 +8,6 @@ export const loginVendor = async (credentials) => {
   };
 
 export const uploadLicense = async (licenseData) => {
-  console.log(licenseData,"🤣");
   const response = await axios.post(`${API_URL}/uploadlicense`, licenseData, {
     headers: {
       'Content-Type': 'multipart/form-data',
@@ -18,7 +17,6 @@ export const uploadLicense = async (licenseData) => {
 };
 
 export const getLicense = async(id)=>{
-  console.log(id,"this is my vendor id");
   const response = await axios.get(`${API_URL}/license/${id}`);
   return response;
 }

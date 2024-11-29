@@ -9,7 +9,6 @@ import { PropertyModel } from "../../infrastructure/database/dbModel/propertyMod
 export default {
   adminLogin: async (req: Request, res: Response, next: NextFunction) => {
     try {
-      // console.log("yyyyyyyyy", req.body);
       const { email, password } = req.body;
       if (!email && !password) {
         throw new Error("user credentials not there");
@@ -18,10 +17,8 @@ export default {
         email,
         password,
       };
-      // console.log(credentials);
 
       const response = await adminInteractor.loginAdmin(credentials);
-      // console.log("fffffffffffffff", response);
       res.status(200).json({ message: "Login success", response });
     } catch (error: any) {
       console.error(error.message);

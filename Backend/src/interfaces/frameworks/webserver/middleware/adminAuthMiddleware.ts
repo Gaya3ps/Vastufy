@@ -1,4 +1,3 @@
-
 import { NextFunction, Response, Request } from "express";
 import jwt from 'jsonwebtoken';
 import { Admin } from "../../../../infrastructure/database/dbModel/adminModel";
