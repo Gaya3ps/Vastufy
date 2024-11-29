@@ -4,6 +4,7 @@ import Footer from '../../components/Footer';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faMobileAlt, faHeadset, faHome, faSyncAlt, faCheckCircle, faTrophy } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 function LandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -11,7 +12,7 @@ function LandingPage() {
   const [lastScrollY, setLastScrollY] = useState(0);
   const [verifiedProperties, setVerifiedProperties] = useState([]);
   const propertiesPerPage = 3; // Number of properties to show per slide
-
+  const navigate = useNavigate();
   // Slide content: images and text
   const slides = [
     { image: '/RE10.jpg', text: 'Explore the Best Properties Across Kerala' },
@@ -66,6 +67,10 @@ function LandingPage() {
   const handleNext = () => {
     setCurrentSlide((prev) => (prev + 1) % totalSlides);
   };
+
+  const handleClick = (propertyId) => {
+    navigate(`/propertydetails/${propertyId}`);
+  }
 
   return (
     <div className="bg-gray-50 min-h-screen flex flex-col">
@@ -155,7 +160,9 @@ function LandingPage() {
                             <p className="text-lg font-semibold text-blue-600 mt-2">
                               ₹ {property.expectedPrice.toLocaleString()}
                             </p>
-                            <button className="mt-4 w-full py-2 text-center text-white font-semibold bg-blue-600 hover:bg-blue-700 transition duration-200 ease-in-out rounded-md">
+                            <button 
+                             onClick={() => handleClick(property._id)}
+                            className="mt-4 w-full py-2 text-center text-white font-semibold bg-blue-600 hover:bg-blue-700 transition duration-200 ease-in-out rounded-md">
                               View Details
                             </button>
                           </div>
@@ -240,16 +247,31 @@ function LandingPage() {
   </div>
 </section>
 
-      {/* Explore by District */}
+      {/* Contact */}
       <section className="max-w-6xl mx-auto py-8">
-        <h3 className="text-2xl font-bold text-gray-800 mb-4 text-center">Explore by District</h3>
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-          {['Ernakulam', 'Kollam', 'Trivandrum', 'Thrissur', 'Kottayam'].map((district) => (
-            <div key={district} className="p-4 border border-gray-300 rounded-lg text-center bg-white hover:bg-gray-100 cursor-pointer">
-              {district}
+          {/* Right Section - Contact Details */}
+          <div className="w-full lg:w-1/2 mt-8 lg:mt-0 ml-auto flex justify-end">
+            <div className="flex flex-col items-start space-y-6">
+              <div className="flex items-center space-x-4">
+                <div className="text-4xl text-teal-500">
+                  <FaPhoneAlt />
+                </div>
+                <div className="text-lg text-gray-800 font-semibold">
+                  <p>Call for help now!</p>
+                  <p className="text-2xl text-blue-800">+91 9000 3700 44</p>
+                </div>
+              </div>
+
+              <div>
+                <a
+                  href="mailto:info@vastufy.com"
+                  className="inline-block bg-yellow-400 text-blue-800 px-8 py-3 rounded-full font-semibold text-lg hover:bg-blue-800 hover:text-white transition-all ml-5"
+                >
+                  Contact us
+                </a>
+              </div>
             </div>
-          ))}
-        </div>
+          </div>
       </section>
 
       <Footer />

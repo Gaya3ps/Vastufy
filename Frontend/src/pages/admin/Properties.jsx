@@ -25,9 +25,9 @@ function Properties() {
     fetchProperties();
   }, []);
 
-  const handleViewDetails = (propertyId) => {
-    navigate(`/admin/propertydetail/${propertyId}`); // Navigate to property detail page using the property ID
-  };
+  // const handleViewDetails = (propertyId) => {
+  //   navigate(`/admin/propertydetail/${propertyId}`); // Navigate to property detail page using the property ID
+  // };
 
 
   if (loading) {
@@ -89,10 +89,10 @@ function Properties() {
 
                 {/* Bottom Buttons - Aligned */}
                 <div className="mt-auto flex justify-between items-center space-x-2">
-                  <button onClick={() => handleViewDetails(property._id)}
+                  {/* <button onClick={() => handleViewDetails(property._id)}
                   className="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-lg transition duration-300 flex items-center justify-center">
                     <FaEye className="inline-block mr-2" /> View Details
-                  </button>
+                  </button> */}
                 </div>
               </div>
             ))}

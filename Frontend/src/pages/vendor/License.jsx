@@ -24,10 +24,16 @@ const License = () => {
       licenseDocument: null
     },
     validationSchema: Yup.object({
-      licenseNumber: Yup.string().required('License number is required'),
+      licenseNumber: Yup.string()
+      .matches(/^VL\d{6}$/, 'License number must start with "VL" and contain exactly 6 digits')
+      .required('License number is required'),
       email: Yup.string().email('Invalid email address').required('Email is required'),
       issueDate: Yup.date().required('Issue date is required'),
-      expiryDate: Yup.date().required('Expiry date is required'),
+      expiryDate: Yup.date()
+      .required('Expiry date is required')
+      .when('issueDate', (issueDate, schema) => 
+        schema.min(issueDate, 'Expiry date must be later than the issue date')
+      ),
       licenseDocument: Yup.mixed().required('License document is required'),
       logo: Yup.mixed(), 
     }),
@@ -156,7 +162,7 @@ const License = () => {
           <button type="submit" className="px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-500">
             Upload License
           </button>
-          {/* <button onClick={() => navigate('/vendor/success')}>Upload License</button> */}
+       
 
         </div>
       </form>

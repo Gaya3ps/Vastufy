@@ -39,10 +39,10 @@ function PropertyList() {
     navigate(`/vendor/edit-property/${id}`);
   };
 
-  const handleSoldOut = (id) => {
-    console.log(`Unlist property with ID: ${id}`);
-    // Add logic to handle unlisting the property
-  };
+  // const handleSoldOut = (id) => {
+  //   console.log(`Unlist property with ID: ${id}`);
+  //   // Add logic to handle unlisting the property
+  // };
 
   // Conditionally render loading, error, and properties
   if (loading) {
@@ -141,12 +141,12 @@ function PropertyList() {
                   >
                     Edit
                   </button>
-                  <button
+                  {/* <button
                     className="flex-1 bg-red-500 hover:bg-red-600 text-white py-2 px-4 rounded-lg transition duration-300 ease-in-out text-sm"
                     onClick={() => handleSoldOut(property._id)}
                   >
                     Mark as Sold
-                  </button>
+                  </button> */}
                 </div>
               </div>
             ))

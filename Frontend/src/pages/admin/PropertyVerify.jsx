@@ -77,12 +77,12 @@ function PropertyVerify() {
                 <Link to={`/admin/property/${property._id}`} key={property._id}>
 
                   <div className="bg-[#0e7490] shadow-md rounded-lg p-6 flex items-center space-x-4 transition-transform duration-200 ease-in-out transform hover:scale-105 hover:shadow-lg">
-                    <BuildingOfficeIcon className="w-12 h-12 text-white" />
+                    <BuildingOfficeIcon className="w-16 h-16 text-white" />
                     <div>
                       <h2 className="text-lg font-semibold text-gray-800 dark:text-white">
                         {property.title}
                       </h2>
-                      <p className="text-gray-600 dark:text-gray-300">
+                      <p className="text-white font-semibold">
                         Vendor: {property.vendor.name}
                       </p>
                     </div>

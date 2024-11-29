@@ -67,7 +67,7 @@ function PropertyDetail() {
               </div>
             ))}
           </Carousel>
-          <p className="text-lg mt-10"><strong className="font-semibold">Description:</strong> {property.description || 'N/A'}</p>
+          <p className="text-sm mt-10"><strong className="font-semibold">Description:</strong> {property.description || 'N/A'}</p>
         </div>
 
         {/* Right Section: Property Details */}
@@ -124,7 +124,7 @@ function PropertyDetail() {
 
           {/* Amenities */}
           <div>
-            <h3 className="font-semibold text-lg">Amenities 🏋️‍♂️:</h3>
+            <h3 className="font-semibold text-lg">Amenities:</h3>
             <ul className="list-disc pl-5 space-y-2">
               {property.amenities.map((amenity, index) => (
                 <li key={index}>{amenity}</li>
