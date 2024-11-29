@@ -5,6 +5,7 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faChevronLeft, faChevronRight, faMobileAlt, faHeadset, faHome, faSyncAlt, faCheckCircle, faTrophy } from '@fortawesome/free-solid-svg-icons';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import {FaPhoneAlt} from "react-icons/fa";
 
 function LandingPage() {
   const [currentSlide, setCurrentSlide] = useState(0);
