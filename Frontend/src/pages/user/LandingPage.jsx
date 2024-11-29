@@ -249,7 +249,7 @@ function LandingPage() {
 </section>
 
       {/* Contact */}
-      <section className="max-w-6xl mx-auto py-8">
+      {/* <section className="max-w-6xl mx-auto py-8"> */}
           {/* Right Section - Contact Details */}
           <div className="w-full lg:w-1/2 mt-8 lg:mt-0 ml-auto flex justify-end">
             <div className="flex flex-col items-start space-y-6">
@@ -273,7 +273,7 @@ function LandingPage() {
               </div>
             </div>
           </div>
-      </section>
+      {/* </section> */}
 
       <Footer />
     </div>
