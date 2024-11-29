@@ -197,7 +197,9 @@ function Subscriptions() {
               </button>
               </div>
               <ul className="space-y-3 text-left">
-                {plan.features[0].split("\n").filter((feature) => feature.trim() !== "").map((feature, i) => (
+                {plan.features[0].split("\n").map((feature) => feature.trim()) // Trim each feature
+    .filter((feature) => feature !== "") // Remove empty features
+    .map((feature, i) => (
                   <li key={i} className="flex items-start">
                     <span className="inline-block w-3 h-3 mr-3 mt-1.5 rounded-full bg-blue-800 flex-shrink-0"></span>
                     <span className="text-gray-700 leading-relaxed">
