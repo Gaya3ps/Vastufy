@@ -42,7 +42,7 @@ app.use(
     secret: "MY_SECRET",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: { secure: true },
   })
 );
 
