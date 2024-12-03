@@ -21,7 +21,6 @@ const propertyModel_1 = require("../../infrastructure/database/dbModel/propertyM
 exports.default = {
     adminLogin: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
-            // console.log("yyyyyyyyy", req.body);
             const { email, password } = req.body;
             if (!email && !password) {
                 throw new Error("user credentials not there");
@@ -30,9 +29,7 @@ exports.default = {
                 email,
                 password,
             };
-            // console.log(credentials);
             const response = yield adminInteractor_1.default.loginAdmin(credentials);
-            // console.log("fffffffffffffff", response);
             res.status(200).json({ message: "Login success", response });
         }
         catch (error) {

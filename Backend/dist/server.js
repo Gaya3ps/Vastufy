@@ -20,26 +20,12 @@ const server = http_1.default.createServer(app);
 dotenv_1.default.config();
 (0, db_1.default)();
 const PORT = process.env.PORT || 5001;
-// const corsOptions = {
-//   // origin: "http://localhost:5173",
-//   origin:"https://vastufy.vercel.app",
-//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true,
-// };
-// const corsOptions = {
-//   origin: ["https://vastufy.vercel.app"], // Allow the specific frontend URL
-//   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
-//   allowedHeaders: ["Content-Type", "Authorization"],
-//   credentials: true,
-// };
-// app.options("*", cors(corsOptions))
-// app.use(cors(corsOptions));
 const corsOptions = {
-    origin: "*", // Allow all origins
+    // origin: "http://localhost:5173",
+    origin: "https://vastufy.vercel.app",
     methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
     allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: false, // Set to false because with "*" you cannot allow credentials
+    credentials: true,
 };
 app.options("*", (0, cors_1.default)(corsOptions));
 app.use((0, cors_1.default)(corsOptions));
@@ -50,7 +36,7 @@ app.use((0, express_session_1.default)({
     secret: "MY_SECRET",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: { secure: true },
 }));
 const io = new socket_io_1.Server(server, {
     cors: {

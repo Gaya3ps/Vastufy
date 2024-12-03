@@ -10,7 +10,7 @@ import vendorRoutes from "./interfaces/routes/vendorRoute";
 import adminRoutes from "./interfaces/routes/adminRoute";
 import { createServer } from "http";
 import http from "http";
-import handleSocketEvents from './domain/helper/socketHandler';
+import handleSocketEvents from "./domain/helper/socketHandler";
 
 const app = express();
 const server = http.createServer(app);
@@ -20,17 +20,15 @@ connectDB();
 
 const PORT = process.env.PORT || 5001;
 
-
 const corsOptions = {
   // origin: "http://localhost:5173",
-  origin:"https://vastufy.vercel.app",
+  origin: "https://vastufy.vercel.app",
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
   allowedHeaders: ["Content-Type", "Authorization"],
   credentials: true,
 };
 
-
-app.options('*', cors(corsOptions));
+app.options("*", cors(corsOptions));
 
 app.use(cors(corsOptions));
 app.use(express.json());
@@ -42,29 +40,24 @@ app.use(
     secret: "MY_SECRET",
     resave: false,
     saveUninitialized: true,
-    cookie: { secure: false },
+    cookie: { secure: true },
   })
 );
-
 
 const io = new Server(server, {
   cors: {
     // origin: "http://localhost:5173",
-    origin:"https://vastufy.vercel.app",
+    origin: "https://vastufy.vercel.app",
     methods: ["GET", "POST"],
     credentials: true, // Allow credentials (e.g., cookies)
   },
 });
 
-
-handleSocketEvents(io)
-
+handleSocketEvents(io);
 
 app.use("/api/users", userRoutes);
 app.use("/api/vendor", vendorRoutes);
 app.use("/api/admin", adminRoutes);
-
-
 
 server.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
