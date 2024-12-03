@@ -25,7 +25,7 @@ const VendorOtp = () => {
   
       try {
         const response = await axios.post(
-          "https://vastufy.onrender.com/api/vendor/otp-verification",
+          "https://vastufy.site/api/vendor/otp-verification",
           { otp, email }
         );
         console.log(response.data);
@@ -45,7 +45,7 @@ const VendorOtp = () => {
       const handleResend = async () => {
         const { email } = location.state || {};
         try {
-          await axios.post('https://vastufy.onrender.com/api/vendor/resend-otp', { email });
+          await axios.post('https://vastufy.site/api/vendor/resend-otp', { email });
           toast.success('OTP resent successfully');
           setTimer(60);
           setIsResendEnabled(false);
