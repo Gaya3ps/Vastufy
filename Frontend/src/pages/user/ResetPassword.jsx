@@ -117,7 +117,7 @@
 //   const handleSubmit = async (values, { setSubmitting }) => {
 //     try {
 //       // Send the token and new password to the backend
-//       const response = await axios.post('http://vastufy.site/api/users/reset-password', {token, password: values.password });
+//       const response = await axios.post('https://vastufy.site/api/users/reset-password', {token, password: values.password });
 
 //       const result = await response.json();
 //       if (response.ok) {
