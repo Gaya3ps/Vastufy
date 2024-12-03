@@ -9,7 +9,7 @@ export const vendorSignup = createAsyncThunk(
   'vendor/signup',
   async (vendorData, { rejectWithValue }) => {
     try {
-      const response = await axios.post('https://vastufy.site/api/vendor/signup', vendorData);
+      const response = await axios.post('http://vastufy.site/api/vendor/signup', vendorData);
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -80,7 +80,7 @@ export const updateVendorProfile = createAsyncThunk(
   async (vendorData,{rejectWithValue}) => {
   try{
     console.log(vendorData,"qqqqqqqqqqqqqqqqqqqqqqqqq");
-    const response = await axios.put(`https://vastufy.site/api/vendor/profile/${vendorData.id}`,vendorData);
+    const response = await axios.put(`http://vastufy.site/api/vendor/profile/${vendorData.id}`,vendorData);
     return response.data;
   }  catch (error){
     return rejectWithValue(error.response.data)

@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://vastufy.site/api/vendor';
+const API_URL = 'http://vastufy.site/api/vendor';
 
 export const loginVendor = async (credentials) => {
     const response = await axios.post(`${API_URL}/login`, credentials);

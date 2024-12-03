@@ -34,7 +34,7 @@ const UserOtp = () => {
 
     try {
       const response = await axios.post(
-        "https://vastufy.site/api/users/otp-verification",
+        "http://vastufy.site/api/users/otp-verification",
         { otp, email }
       );
       console.log(response.data);
@@ -54,7 +54,7 @@ const UserOtp = () => {
     const handleResend = async () => {
       const { email } = location.state || {};
       try {
-        await axios.post('https://vastufy.site/api/users/resend-otp', { email });
+        await axios.post('http://vastufy.site/api/users/resend-otp', { email });
         toast.success('OTP resent successfully');
         setTimer(60);
         setIsResendEnabled(false);

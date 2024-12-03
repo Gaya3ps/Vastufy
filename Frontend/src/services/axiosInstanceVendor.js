@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const axiosInstanceVendor = axios.create({
-    baseURL: 'https://vastufy.site/api/vendor',
+    baseURL: 'http://vastufy.site/api/vendor',
     headers: {
       'Content-Type': 'application/json',
     },

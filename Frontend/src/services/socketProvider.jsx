@@ -10,7 +10,7 @@ function SocketProvider({ children }) {
 
   useEffect(() => {
     if (!socket) {
-      const newSocket = io("https://vastufy.site");
+      const newSocket = io("http://vastufy.site");
       newSocket.on("connect", () => {
         console.log("Socket connected:", newSocket.id);
         setSocket(newSocket);
