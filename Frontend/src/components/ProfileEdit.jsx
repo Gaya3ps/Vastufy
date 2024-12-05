@@ -186,10 +186,7 @@ const ProfileEdit = () => {
   };
 
   const handleSaveClick = () => {
-    if (!userId) {
-      console.error("User ID is missing!");
-      return; // Prevent update if userId is undefined
-    }
+    
     dispatch(updateUser({ userId, name, mobileNumber }))
       .unwrap()
       .then(() => {
