@@ -164,7 +164,7 @@ const ProfileEdit = () => {
   const user = useSelector(selectUser);
   console.log("User Object:", user);
   // const userId = user?.id;
-  const userId =  user?._id; 
+  const userId =  user?.id; 
   console.log("got it hereeee",userId);
   
 
