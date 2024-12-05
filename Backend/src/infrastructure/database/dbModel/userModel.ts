@@ -23,8 +23,8 @@ const UserSchema: Schema = new Schema({
   is_verified: { type: Boolean, default:false },
   is_google: { type: Boolean, default:false },
   is_blocked: { type: Boolean, default:false },
-  resetPasswordToken: { type: String, default: null },  // Allow null values
-  resetPasswordExpires: { type: Date, default: null }        // Field for storing token expiration time
+  resetPasswordToken: { type: String, default: null },  
+  resetPasswordExpires: { type: Date, default: null }        
 },
 {
   timestamps: true, 
