@@ -29,23 +29,19 @@ const UserRoutes = () => {
         <Route path="/login" element={<LoginPage />} />
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+        <Route path="/aboutus" element={<AboutUs />} />
+        <Route path="/services" element={<Services />} />
+        <Route path="/properties" element={<Properties />} />
         <Route path="" element={<UserPrivateRoutes />}>
-          {/* <Route path="/home" element={<Home />} /> */}
           <Route path="/profile" element={<UserProfile />} />
-          <Route path ="/properties" element = {<Properties/>} />
-          <Route path ="/propertydetails/:propertyId" element = {<PropertyDetails/>} />
-          <Route path ="/bookingdetails" element = {<BookingDetails/>} />
-          <Route path ="/chat/:chatId" element ={<ChatPage/>} />
-          <Route path ="/chatList" element ={<ChatsList/>} />
-          <Route path ="/userChat/:chatId" element ={<UserChat/>} />
-          <Route path ="/aboutus" element ={<AboutUs/>} />
-          <Route path ="/services" element ={<Services/>} />
-
-
-
-
-
-
+          <Route
+            path="/propertydetails/:propertyId"
+            element={<PropertyDetails />}
+          />
+          <Route path="/bookingdetails" element={<BookingDetails />} />
+          <Route path="/chat/:chatId" element={<ChatPage />} />
+          <Route path="/chatList" element={<ChatsList />} />
+          <Route path="/userChat/:chatId" element={<UserChat />} />
         </Route>
       </Routes>
     </>

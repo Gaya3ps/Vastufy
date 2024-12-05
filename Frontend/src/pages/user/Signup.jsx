@@ -11,9 +11,6 @@ import logo from '../../assets/logo3.jpg'
 
 
 
-
-
-
 const Signup = () => {
 const dispatch = useDispatch();
 const navigate = useNavigate();
