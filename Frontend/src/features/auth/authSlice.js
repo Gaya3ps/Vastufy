@@ -208,18 +208,18 @@ const authSlice = createSlice({
       state.status = 'failed';
       state.error = action.payload;
     })
-    .addCase(updateUser.pending, (state) => {
-      state.loading = true;
-      state.error = null;
-    })
-    .addCase(updateUser.fulfilled, (state, action) => {
-      state.loading = false;
-      state.user = action.payload;
-    })
-    .addCase(updateUser.rejected, (state, action) => {
-      state.loading = false;
-      state.error = action.payload;
-    });
+    // .addCase(updateUser.pending, (state) => {
+    //   state.loading = true;
+    //   state.error = null;
+    // })
+    // .addCase(updateUser.fulfilled, (state, action) => {
+    //   state.loading = false;
+    //   state.user = action.payload;
+    // })
+    // .addCase(updateUser.rejected, (state, action) => {
+    //   state.loading = false;
+    //   state.error = action.payload;
+    // });
 
     
      
