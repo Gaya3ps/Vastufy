@@ -113,7 +113,9 @@ export default {
   },
 
   updateUser: async (req: Request, res: Response) => {
-    const { name, mobileNumber } = req.body;
+    console.log(req.body,'qwqwqwwqq');
+    
+    const { name, mobileNumber} = req.body;
     const { userId } = req.params;
     console.log(userId,req.params,"hellooo");
     console.log(name, mobileNumber,"haaii")

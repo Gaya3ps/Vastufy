@@ -117,6 +117,7 @@ exports.default = {
         }
     }),
     updateUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+        console.log(req.body, 'qwqwqwwqq');
         const { name, mobileNumber } = req.body;
         const { userId } = req.params;
         console.log(userId, req.params, "hellooo");
