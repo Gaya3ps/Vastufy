@@ -20,12 +20,12 @@ const navigate = useNavigate();
 const { loading, error,user} = useSelector((state) => state.auth);
 console.log(user);
 
-useEffect(()=>{
-  if(user){
-    console.log("going  for otp verification")
-    navigate("/otp-verification")
-  }
-},[user])
+// useEffect(()=>{
+//   if(user){
+//     console.log("going  for otp verification")
+//     navigate("/otp-verification")
+//   }
+// },[user])
 
 const handleGoogleSignup = async () => {
   try {
