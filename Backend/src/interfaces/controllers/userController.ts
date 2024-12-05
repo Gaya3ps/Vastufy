@@ -16,7 +16,6 @@ export default {
   userRegistration: async (req: Request, res: Response, next: NextFunction) => {
     try {
       const user = await userInteractor.registerUser(req.body);
-      console.log(user, "goottttttttttt");
 
       res.status(200).json({ message: "registration success", user });
     } catch (error: any) {

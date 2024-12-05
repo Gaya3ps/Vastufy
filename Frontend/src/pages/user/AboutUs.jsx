@@ -69,7 +69,7 @@ function AboutUs() {
           </p>
         </div>
         <motion.img
-          src="/public/RE11.gif"
+          src="/RE11.gif"
           alt="Real Estate"
           className="hidden md:block ml-12 rounded-lg shadow-xl max-w-md"
           initial={{ opacity: 0, x: 100 }}
