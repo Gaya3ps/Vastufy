@@ -193,7 +193,7 @@ function PropertyDetails() {
             {/* Property Description below image */}
             <div className="mt-8">
               <h2 className="text-2xl font-bold mb-4 text-gray-800">Description</h2>
-              <p className="text-gray-600 text-justify max-h-72 overflow-y-auto">{property.description}</p>
+              <p className="text-gray-600 text-justify ">{property.description}</p>
             </div>
           </div>
 
