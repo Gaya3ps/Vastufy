@@ -162,6 +162,7 @@ import { selectUser, updateUser } from '../features/auth/authSlice';
 const ProfileEdit = () => {
   const dispatch = useDispatch();
   const user = useSelector(selectUser);
+  console.log("User Object:", user);
   // const userId = user?.id;
   const userId =  user?._id; 
   console.log("got it hereeee",userId);
