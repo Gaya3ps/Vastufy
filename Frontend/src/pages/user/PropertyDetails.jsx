@@ -25,6 +25,7 @@ function PropertyDetails() {
   const [isConfirmationModalOpen, setIsConfirmationModalOpen] = useState(false); // Modal state for confirmation
   const [selectedDate, setSelectedDate] = useState(null); // Date selected by the user
   const [timeSlot, setTimeSlot] = useState(''); // Time slot selected by the user
+  const [isBooking, setIsBooking] = useState(false);
   const [availableTimeSlots] = useState([
     '10:00 AM - 11:00 AM',
     '11:00 AM - 12:00 PM',
@@ -79,6 +80,10 @@ function PropertyDetails() {
   // Handle booking submission
   const handleBookVisit = async (e) => {
     e.preventDefault();
+
+    if (isBooking) return; // Prevent multiple submissions
+
+    setIsBooking(true); // Start the booking process
     const userId = user.id; // Replace with actual user ID
     const vendorId = property.vendor._id; // Assuming property has vendorId
 
@@ -98,15 +103,14 @@ function PropertyDetails() {
         closeBookingModal(); // Close the booking modal
         openConfirmationModal(); // Open the confirmation modal
       }
-    } catch (error) {
-      console.error('Error booking the visit:', error);
-      // Check for duplicate booking error (status 409)
+    }  catch (error) {
       if (error.response && error.response.status === 409) {
         toast.error('You have already booked a visit for this date and time.');
       } else {
-        toast.error('You have already booked a visit for this date and time.');
+        toast.error('An error occurred while booking the visit.');
       }
-      
+    } finally {
+      setIsBooking(false); // Reset the booking status
     }
   };
 
@@ -161,7 +165,7 @@ function PropertyDetails() {
       <Header />
 
       {/* Content container with more spacing from the top */}
-      <div className="max-w-7xl mx-auto p-8 mt-16">
+      <div className="max-w-7xl mx-auto p-8 mt-24">
         {/* Property title */}
         <h1 className="text-4xl font-bold mb-10 text-gray-800">{property.title}</h1>
 
@@ -189,7 +193,7 @@ function PropertyDetails() {
             {/* Property Description below image */}
             <div className="mt-8">
               <h2 className="text-2xl font-bold mb-4 text-gray-800">Description</h2>
-              <p className="text-gray-600 text-justify">{property.description}</p>
+              <p className="text-gray-600 text-justify max-h-72 overflow-y-auto">{property.description}</p>
             </div>
           </div>
 
@@ -278,11 +282,12 @@ function PropertyDetails() {
                 Cancel
               </button>
               <button
-                type="submit"
-                className="bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md transition-all duration-200"
-              >
-                Confirm Booking
-              </button>
+  type="submit"
+  disabled={isBooking} // Disable button while booking is in progress
+  className={`bg-gradient-to-r from-blue-500 to-blue-600 text-white py-2 px-4 rounded-lg hover:from-blue-600 hover:to-blue-700 shadow-md transition-all duration-200 ${isBooking ? 'opacity-50 cursor-not-allowed' : ''}`}
+>
+  {isBooking ? 'Booking...' : 'Confirm Booking'}
+</button>
             </div>
           </form>
         </div>

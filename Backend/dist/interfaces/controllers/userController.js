@@ -22,7 +22,6 @@ exports.default = {
     userRegistration: (req, res, next) => __awaiter(void 0, void 0, void 0, function* () {
         try {
             const user = yield userInteractor_1.default.registerUser(req.body);
-            console.log(user, "goottttttttttt");
             res.status(200).json({ message: "registration success", user });
         }
         catch (error) {
@@ -120,6 +119,7 @@ exports.default = {
     updateUser: (req, res) => __awaiter(void 0, void 0, void 0, function* () {
         const { name, mobileNumber } = req.body;
         const { userId } = req.params;
+        console.log(userId, req.params, "hellooo");
         try {
             const user = yield userModel_1.Users.findById(userId);
             if (!user) {

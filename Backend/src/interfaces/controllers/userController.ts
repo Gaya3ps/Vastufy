@@ -115,6 +115,8 @@ export default {
   updateUser: async (req: Request, res: Response) => {
     const { name, mobileNumber } = req.body;
     const { userId } = req.params;
+    console.log(userId,req.params,"hellooo");
+    
     try {
       const user = await Users.findById(userId);
 
