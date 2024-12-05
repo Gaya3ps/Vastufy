@@ -116,6 +116,7 @@ export default {
     const { name, mobileNumber } = req.body;
     const { userId } = req.params;
     console.log(userId,req.params,"hellooo");
+    console.log(req.body,"haaii")
     
     try {
       const user = await Users.findById(userId);

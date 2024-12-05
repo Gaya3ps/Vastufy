@@ -120,6 +120,7 @@ exports.default = {
         const { name, mobileNumber } = req.body;
         const { userId } = req.params;
         console.log(userId, req.params, "hellooo");
+        console.log(req.body, "haaii");
         try {
             const user = yield userModel_1.Users.findById(userId);
             if (!user) {
