@@ -176,41 +176,6 @@ function Subscriptions() {
         </h1>
 
 
-
-       {/* Free Trial Card */}
-       <div className="w-full max-w-sm bg-white rounded-lg shadow-lg p-6 mb-8 text-center border border-gray-300">
-          <h3 className="text-2xl font-semibold mb-2 text-gray-700">Free Trial</h3>
-          <div className="text-4xl font-bold mb-2">₹0</div>
-          <div className="text-sm text-gray-500 mb-4">No platform fee</div>
-          <div className="text-center mb-4">
-            <button className="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg mb-6 hover:bg-green-500 transition-colors duration-200 w-32">
-              START FREE TRIAL
-            </button>
-          </div>
-          <ul className="space-y-3 text-left">
-            <li className="flex items-start">
-              <span className="inline-block w-3 h-3 mr-3 mt-1.5 rounded-full bg-blue-800 flex-shrink-0"></span>
-              <span className="text-gray-700 leading-relaxed">
-                Vendors can list 2 properties for free!!
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="inline-block w-3 h-3 mr-3 mt-1.5 rounded-full bg-blue-800 flex-shrink-0"></span>
-              <span className="text-gray-700 leading-relaxed">
-                Full access to all features
-              </span>
-            </li>
-            <li className="flex items-start">
-              <span className="inline-block w-3 h-3 mr-3 mt-1.5 rounded-full bg-blue-800 flex-shrink-0"></span>
-              <span className="text-gray-700 leading-relaxed">
-                No credit card required
-              </span>
-            </li>
-          </ul>
-        </div>
-
-
-
         <div className="flex flex-col md:flex-row justify-center items-center space-y-6 md:space-y-0 md:space-x-6">
           {subscriptions.map((plan, index) => (
             <div
@@ -251,28 +216,60 @@ function Subscriptions() {
         </div>
 
         {/* Subscribed Plan */}
-        {subscribedPlan && (
-          <div className="mt-10 text-center">
-            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
-              Your Subscribed Plan
-            </h2>
-            <div className="w-full max-w-md mx-auto bg-green-100 rounded-lg shadow-lg p-6 text-center border border-green-300">
-              <h3 className="text-xl font-semibold text-gray-700">
-                {subscribedPlan.subscription.planName}
-              </h3>
-              <div className="text-2xl font-bold text-green-700 mt-2">
-                ₹{subscribedPlan.subscription.price}
-              </div>
-              <div className="text-sm text-gray-600 mt-4">
-                <strong>Subscription ID:</strong> {subscribedPlan._id}
-              </div>
-              <div className="text-sm text-gray-600 mt-2">
-                <strong>Purchase Date:</strong>{" "}
-                {new Date(subscribedPlan.purchaseDate).toLocaleDateString()}
-              </div>
-            </div>
-          </div>
-        )}
+        {subscribedPlan ? (
+  <div className="mt-10 text-center">
+    <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+      Your Subscribed Plan
+    </h2>
+    <div className="w-full max-w-md mx-auto bg-green-100 rounded-lg shadow-lg p-6 text-center border border-green-300">
+      <h3 className="text-xl font-semibold text-gray-700">
+        {subscribedPlan.subscription.planName}
+      </h3>
+      <div className="text-2xl font-bold text-green-700 mt-2">
+        ₹{subscribedPlan.subscription.price}
+      </div>
+      <div className="text-sm text-gray-600 mt-4">
+        <strong>Subscription ID:</strong> {subscribedPlan._id}
+      </div>
+      <div className="text-sm text-gray-600 mt-2">
+        <strong>Purchase Date:</strong>{" "}
+        {new Date(subscribedPlan.purchaseDate).toLocaleDateString()}
+      </div>
+    </div>
+  </div>
+) : (
+  // Show Free Trial Card if no subscription
+  <div className="w-full max-w-sm bg-white rounded-lg shadow-lg p-6 mb-8 text-center border border-gray-300">
+    <h3 className="text-2xl font-semibold mb-2 text-gray-700">Free Trial</h3>
+    <div className="text-4xl font-bold mb-2">₹0</div>
+    <div className="text-sm text-gray-500 mb-4">No platform fee</div>
+    <div className="text-center mb-4">
+      <button className="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg mb-6 hover:bg-green-500 transition-colors duration-200 w-32">
+        START FREE TRIAL
+      </button>
+    </div>
+    <ul className="space-y-3 text-left">
+      <li className="flex items-start">
+        <span className="inline-block w-3 h-3 mr-3 mt-1.5 rounded-full bg-blue-800 flex-shrink-0"></span>
+        <span className="text-gray-700 leading-relaxed">
+          Vendors can list 2 properties for free!!
+        </span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-3 h-3 mr-3 mt-1.5 rounded-full bg-blue-800 flex-shrink-0"></span>
+        <span className="text-gray-700 leading-relaxed">
+          Full access to all features
+        </span>
+      </li>
+      <li className="flex items-start">
+        <span className="inline-block w-3 h-3 mr-3 mt-1.5 rounded-full bg-blue-800 flex-shrink-0"></span>
+        <span className="text-gray-700 leading-relaxed">
+          No credit card required
+        </span>
+      </li>
+    </ul>
+  </div>
+)}
       </div>
     </div>
   );
