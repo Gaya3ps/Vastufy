@@ -214,14 +214,15 @@ function Subscriptions() {
           ))}
         </div>
 
-          {/* Subscribed Plan or Free Trial Card */}
+        {/* Subscribed Plan */}
+        {subscribedPlan && (
           <div className="mt-10 text-center">
-          {/* Check if vendor has subscribed to a plan */}
-          {subscribedPlan ? (
-            // If subscribed, display the subscribed plan card
+            <h2 className="text-2xl font-semibold text-gray-800 mb-4">
+              Your Subscribed Plan
+            </h2>
             <div className="w-full max-w-md mx-auto bg-green-100 rounded-lg shadow-lg p-6 text-center border border-green-300">
               <h3 className="text-xl font-semibold text-gray-700">
-                Your Subscribed Plan
+                {subscribedPlan.subscription.planName}
               </h3>
               <div className="text-2xl font-bold text-green-700 mt-2">
                 ₹{subscribedPlan.subscription.price}
@@ -234,22 +235,8 @@ function Subscriptions() {
                 {new Date(subscribedPlan.purchaseDate).toLocaleDateString()}
               </div>
             </div>
-          ) : (
-            // If not subscribed, display the free trial card
-            <div className="w-full max-w-md mx-auto bg-yellow-200 rounded-lg shadow-lg p-6 text-center border border-gray-300 transform transition-transform duration-300 hover:scale-105">
-              <h3 className="text-2xl font-semibold mb-2 text-gray-700">
-                Free Trial
-              </h3>
-              <p className="text-lg font-bold mb-2">List 2 Properties for Free!</p>
-              <button
-                onClick={() => handleBuy({ planName: "Free Trial", price: 0 })}
-                className="bg-green-500 text-white font-semibold py-2 px-4 rounded-lg mb-6 hover:bg-green-400 transition-colors duration-200 w-24"
-              >
-                Start Free Trial
-              </button>
-            </div>
-          )}
-        </div>
+          </div>
+        )}
       </div>
     </div>
   );
