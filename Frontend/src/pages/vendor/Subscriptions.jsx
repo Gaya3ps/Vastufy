@@ -246,7 +246,7 @@ function Subscriptions() {
     <div className="text-sm text-gray-500 mb-4">No platform fee</div>
     <div className="text-center mb-4">
       <button className="bg-green-600 text-white font-semibold py-2 px-4 rounded-lg mb-6 hover:bg-green-500 transition-colors duration-200 w-32">
-        START FREE TRIAL
+      You're on a Free Trial!
       </button>
     </div>
     <ul className="space-y-3 text-left">
