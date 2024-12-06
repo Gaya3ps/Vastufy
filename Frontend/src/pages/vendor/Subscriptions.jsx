@@ -239,6 +239,7 @@ function Subscriptions() {
   </div>
 ) : (
   // Show Free Trial Card if no subscription
+<div className="flex justify-center mt-10"> {/* This centers the card */}
   <div className="w-full max-w-sm bg-white rounded-lg shadow-lg p-6 mb-8 text-center border border-gray-300">
     <h3 className="text-2xl font-semibold mb-2 text-gray-700">Free Trial</h3>
     <div className="text-4xl font-bold mb-2">₹0</div>
@@ -269,6 +270,7 @@ function Subscriptions() {
       </li>
     </ul>
   </div>
+</div>
 )}
       </div>
     </div>
