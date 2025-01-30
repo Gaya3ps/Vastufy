@@ -22,12 +22,12 @@ export const loginAdmin = createAsyncThunk(
 );
 
 export const fetchUsers = createAsyncThunk('admin/fetchUsers', async () => {
-  const response = await axios.get('https://vastufy.site/api/admin/userlist');
+  const response = await axios.get('https://vastufy.onrender.com/api/admin/userlist');
   return response.data;
 });
 
 export const toggleUserStatus = createAsyncThunk('admin/toggleUserStatus', async ({ userId, isBlocked }) => {
-  const response = await axios.post('https://vastufy.site/api/admin/block-user', { userId, is_blocked: isBlocked });
+  const response = await axios.post('https://vastufy.onrender.com/api/admin/block-user', { userId, is_blocked: isBlocked });
   return response.data;
 });
 
@@ -43,7 +43,7 @@ export const clearAdmin = createAsyncThunk(
   export const addCategory = createAsyncThunk('admin/addCategory', async (categoryData, {rejectWithValue})=>{
 try {
   console.log(categoryData,'uuuuuuuuuuuuuuuuuuuu');
-  const response = await axios.post('https://vastufy.site/api/admin/add-category', categoryData)
+  const response = await axios.post('https://vastufy.onrender.com/api/admin/add-category', categoryData)
   return response.data;
   
 } catch (error) {
@@ -57,7 +57,7 @@ try {
       const {id,...data} = editCategoryData;
       
       
-    const response = await axios.put(`https://vastufy.site/api/admin/edit-category/${id}`,data )
+    const response = await axios.put(`https://vastufy.onrender.com/api/admin/edit-category/${id}`,data )
     return response.data
 
     }catch (error) {
@@ -71,7 +71,7 @@ try {
       const id = deleteCategoryData;
       console.log(id,"ppppppppppppppppppppppppppp");
       
-      const response = await axios.delete(`https://vastufy.site/api/admin/delete-category/${id}`)
+      const response = await axios.delete(`https://vastufy.onrender.com/api/admin/delete-category/${id}`)
       return response.data;
       
     }catch (error) {
@@ -82,7 +82,7 @@ try {
   export const addSubcategory = createAsyncThunk('admin/addSubcategory', async (subCategoryData,{rejectWithValue}) => {
    try {
     console.log(subCategoryData,'zzzzzzzzzzzzzzzzzzzzzzzzzz');
-  const response = await axios.post('https://vastufy.site/api/admin/add-subcategory', subCategoryData)
+  const response = await axios.post('https://vastufy.onrender.com/api/admin/add-subcategory', subCategoryData)
   return response.data;
     
    } catch (error) {
@@ -95,7 +95,7 @@ try {
     console.log(editSubcategory,'iiiiiiiii');
 const {id, ...data} = editSubcategory;
 
-    const response = await axios.put(`https://vastufy.site/api/admin/edit-subcategory/${id}`,data);
+    const response = await axios.put(`https://vastufy.onrender.com/api/admin/edit-subcategory/${id}`,data);
     return response.data;
     
   } catch (error) {
@@ -110,7 +110,7 @@ export const  deleteSubcategory = createAsyncThunk('admin/deleteSubcategory', as
     const id = deleteSubcategorydata;
     console.log(id,"cccccccccccccccc");
     
-    const response = await axios.delete(`https://vastufy.site/api/admin/delete-subcategory/${id}`)
+    const response = await axios.delete(`https://vastufy.onrender.com/api/admin/delete-subcategory/${id}`)
     return response.data;
     
   }catch (error) {
@@ -124,7 +124,7 @@ export const addSubscriptionPlan = createAsyncThunk(
   async (subscriptionData, { rejectWithValue }) => {
     console.log(subscriptionData,"??//??//???");
     try {
-      const response = await axiosInstance.post('https://vastufy.site/api/admin/add-subscription-plan', subscriptionData);
+      const response = await axiosInstance.post('https://vastufy.onrender.com/api/admin/add-subscription-plan', subscriptionData);
       console.log(response,"gggggggggggggggggggggggggggg");
       return response.data;
     } catch (error) {
